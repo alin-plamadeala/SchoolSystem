@@ -1,0 +1,19 @@
+{
+  "name": "school-system",
+  "version": "1.0.0",
+  "description": "A school system with assignments and announcments",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alin-plamadeala/SchoolSystem.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alin-plamadeala/SchoolSystem/issues"
+  },
+  "homepage": "https://github.com/alin-plamadeala/SchoolSystem#readme"
+}
