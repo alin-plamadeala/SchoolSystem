@@ -5,7 +5,7 @@ var hbs = require("express-handlebars");
 const port = 3000;
 
 app.use(express.static("public"));
-const index = require("./routes/index");
+const index = require("./routes/routes");
 
 app.use("/", index);
 

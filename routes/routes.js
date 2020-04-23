@@ -10,6 +10,12 @@ router.get("/", function (req, res, next) {
   });
 });
 
+router.get("/login", function (req, res, next) {
+  res.render("login", {
+    layout: "loginLayout",
+  });
+});
+
 let user = { name: "John Doe" };
 let notifications = [
   {

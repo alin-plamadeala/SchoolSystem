@@ -7,13 +7,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
   <title>Title</title>
-
+  {{!-- css --}}
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
     integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/jquery.mCustomScrollbar.css" />
 
-
+  {{!-- scripts --}}
   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
     integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
     crossorigin="anonymous"></script>
@@ -41,51 +41,45 @@
       </div>
 
       <ul class="list-unstyled components">
-        <li class="">
-          <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"
-            class="dropdown-toggle sidebar-dropdown-toggle">Menu 1</a>
-          <ul class="collapse list-unstyled" id="homeSubmenu">
-            <li>
-              <a href="#">Submenu 1</a>
-            </li>
-            <li>
-              <a href="#">Submenu 2</a>
-            </li>
-            <li>
-              <a href="#">Submenu 3</a>
-            </li>
-          </ul>
-        </li>
-        <li>
-          <a href="#">Menu 2</a>
-        </li>
+        {{> studentMenu}}
       </ul>
     </nav>
 
     <!-- Right side  -->
     <div id="right">
-      <nav class="navbar navbar-expand-lg navbar-light bg-light topbar sticky-top">
+      {{!-- NavBar --}}
+      <nav class="navbar navbar-expand-sm navbar-light bg-light topbar sticky-top">
         <div class="container-fluid">
+          {{!-- Toggle side menu --}}
           <button type="button" id="sidebarCollapse" class="btn btn-info">
             <i class="fas fa-align-left"></i>
           </button>
           <div class="navbar-collapse" id="navbarSupportedContent">
             <ul class="nav navbar-nav ml-auto">
+              {{!-- notifications dropdown --}}
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-toggle="dropdown"
                   aria-haspopup="true" aria-expanded="false">
                   <i class="far fa-bell"></i> Notifications
                 </a>
                 <div class="dropdown-menu dropdown-menu-right dropdown-top" aria-labelledby="notifDropdown">
+                  {{!-- dropdown content --}}
                   {{> notifications}}
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="#dsadsa" style="text-align: center; font-weight: bold;">See all</a>
                 </div>
               </li>
+              {{!-- Account dropdown --}}
               <li class="nav-item dropdown">
-                <a class="nav-link">
+                <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown"
+                  aria-haspopup="true" aria-expanded="false">
                   <i class="far fa-user"></i> {{user.name}}
                 </a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-top" aria-labelledby="profileDropdown">
+                  {{!-- dropdown content --}}
+                  <a class="dropdown-item dropdown-item_" href="/settings"><i class="fas fa-user-cog"></i> Settings</a>
+                  <a class="dropdown-item dropdown-item_" href="/profile"><i class="fas fa-user-edit"></i> Edit
+                    profile</a>
+                  <a class="dropdown-item dropdown-item_" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
               </li>
             </ul>
           </div>
@@ -94,7 +88,7 @@
 
       <!-- content -->
       <div id="content" class="{{template}}">
-        {{body}}
+        {{{body}}}
       </div>
       {{> footer}}
     </div>
