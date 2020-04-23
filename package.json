@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/alin-plamadeala/SchoolSystem/issues"
   },
-  "homepage": "https://github.com/alin-plamadeala/SchoolSystem#readme"
+  "homepage": "https://github.com/alin-plamadeala/SchoolSystem#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-handlebars": "^4.0.3"
+  }
 }
