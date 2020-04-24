@@ -41,7 +41,16 @@
       </div>
 
       <ul class="list-unstyled components">
+        {{#ifEquals user.role "student"}}
         {{> studentMenu}}
+        {{/ifEquals}}
+        {{#ifEquals user.role "teacher"}}
+        {{> teacherMenu}}
+        {{/ifEquals}}
+        {{#ifEquals user.role "admin"}}
+        {{> adminMenu}}
+        {{/ifEquals}}
+
       </ul>
     </nav>
 
@@ -71,7 +80,7 @@
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown"
                   aria-haspopup="true" aria-expanded="false">
-                  <i class="far fa-user"></i> {{user.name}}
+                  <i class="far fa-user"></i> {{user.email}}
                 </a>
                 <div class="dropdown-menu dropdown-menu-right dropdown-top" aria-labelledby="profileDropdown">
                   {{!-- dropdown content --}}
@@ -88,6 +97,7 @@
 
       <!-- content -->
       <div id="content" class="{{template}}">
+
         {{{body}}}
       </div>
       {{> footer}}

@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 const path = require("path");
 const User = require("./models/userModel");
 const routes = require("./routes/route.js");
@@ -22,11 +23,13 @@ mongoose
     console.log("Connected to the Database successfully");
   });
 
+app.use(cookieParser());
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(async (req, res, next) => {
-  if (req.headers["x-access-token"]) {
-    const accessToken = req.headers["x-access-token"];
+  if (req.cookies["Authorization"]) {
+    const accessToken = req.cookies["Authorization"];
     const { userId, exp } = await jwt.verify(
       accessToken,
       process.env.JWT_SECRET
@@ -50,7 +53,8 @@ app.use(express.static("public"));
 
 app.use("/", routes);
 
-app.set("view engine", "hbs");
+const hbsHelpers = require("./views/helpers/helpers");
+
 app.engine(
   "hbs",
   hbs({
@@ -58,9 +62,11 @@ app.engine(
     defaultView: "default",
     layoutsDir: __dirname + "/views/layouts/",
     partialsDir: __dirname + "/views/partials/",
+    helpers: hbsHelpers,
   })
 );
 
+app.set("view engine", "hbs");
 const server = app.listen(PORT, (error) => {
   if (error) {
     console.log("Error starting the server");

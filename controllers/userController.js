@@ -1,6 +1,7 @@
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const cookies = require("cookie-parser");
 
 const { roles } = require("../roles");
 
@@ -8,6 +9,7 @@ exports.grantAccess = function (action, resource) {
   return async (req, res, next) => {
     try {
       const permission = roles.can(req.user.role)[action](resource);
+
       if (!permission.granted) {
         return res.status(401).json({
           error: "You don't have enough permission to perform this action",
@@ -23,11 +25,8 @@ exports.grantAccess = function (action, resource) {
 exports.allowIfLoggedin = async (req, res, next) => {
   try {
     const user = res.locals.loggedInUser;
-    console.log(user);
-    if (!user)
-      return res.status(401).json({
-        error: "You need to be logged in to access this route",
-      });
+
+    if (!user) return res.redirect("/login");
     req.user = user;
     next();
   } catch (error) {
@@ -80,14 +79,24 @@ exports.login = async (req, res, next) => {
       expiresIn: "1d",
     });
     await User.findByIdAndUpdate(user._id, { accessToken });
-    res.status(200).json({
-      data: { email: user.email, role: user.role },
-      accessToken,
+    res.cookie("Authorization", accessToken, {
+      secure: false,
+      httpOnly: true,
     });
+    console.log(user);
+    res.redirect("/");
+    //res.status(200).send({ "x-access-token": accessToken });
   } catch (error) {
     next(error);
   }
 };
+
+exports.loginPage = async (req, res, next) => {
+  res.render("login", {
+    layout: "loginLayout",
+  });
+};
+
 exports.getUsers = async (req, res, next) => {
   const users = await User.find({});
   res.status(200).json({
