@@ -16,6 +16,11 @@ const UserSchema = new Schema(
     email: {
       type: String,
       required: true,
+      unique: true,
+      trim: true,
+    },
+    newEmail: {
+      type: String,
       trim: true,
     },
     password: {
@@ -29,6 +34,10 @@ const UserSchema = new Schema(
     },
     accessToken: {
       type: String,
+    },
+    active: {
+      type: Boolean,
+      default: false,
     },
   },
   {
