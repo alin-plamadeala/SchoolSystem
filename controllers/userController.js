@@ -194,6 +194,66 @@ exports.addUser = async (req, res, next) => {
     next(error);
   }
 };
+exports.addUserList = async (req, res, next) => {
+  try {
+    const { csvResult } = req.body;
+    let newUserList = [];
+    let errors = [];
+    for (var i = 0, len = csvResult.length; i < len; i++) {
+      const name = csvResult[i][0].split(" ");
+      const firstName = name[0];
+      const lastName = csvResult[i][0].substring(name[0].length).trim();
+      const email = csvResult[i][1];
+      if (!firstName || !lastName) {
+        errors.push({ error: "Invalid name", index: i });
+      } else if (!email) {
+        errors.push({ error: "Invalid email", index: i });
+      } else if (await User.exists({ email })) {
+        errors.push({ error: "Email already in use", index: i });
+      }
+      newUserList.push({ firstName, lastName, email });
+    }
+    if (errors.length === 0) {
+      res.status(200).json({ message: "no erros" });
+    } else {
+      res.status(400).json({ errors });
+    }
+    console.log(newUserList);
+    // const name = fullName.split(" ");
+    // const firstName = name[0];
+    // const lastName = fullName.substring(name[0].length).trim();
+
+    // if (!firstName || !lastName || !email) {
+    //   res.status(400).json({
+    //     title: "Error",
+    //     message: "Please provide valid name and email",
+    //   });
+    // }
+
+    // if (await User.exists({ email })) {
+    //   res.status(400).json({
+    //     title: "Error",
+    //     message: "Email already in use",
+    //   });
+    // }
+    // const password = Math.random().toString(36).slice(-8);
+    // const hashedPassword = await hashPassword(password);
+    // const newUser = new User({
+    //   firstName,
+    //   lastName,
+    //   email,
+    //   role,
+    //   password: hashedPassword,
+    // });
+    // await newUser.save();
+    // transporter.createAccount(newUser, password);
+    // res.json({
+    //   data: newUser,
+    // });
+  } catch (error) {
+    next(error);
+  }
+};
 
 exports.logout = async (req, res, next) => {
   res.cookie("Authorization", "");
