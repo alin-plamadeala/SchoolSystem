@@ -12,8 +12,10 @@ exports.grantAccess = function (action, resource) {
       const permission = roles.can(req.user.role)[action](resource);
 
       if (!permission.granted) {
-        return res.status(401).json({
-          error: "You don't have enough permission to perform this action",
+        return res.status(401).render("error", {
+          layout: false,
+          title: "Error",
+          message: "You don't have enough permission to perform this action",
         });
       }
       next();
@@ -154,29 +156,39 @@ exports.postEditProfile = async (req, res, next) => {
   }
 };
 
-exports.signup = async (req, res, next) => {
+exports.addUser = async (req, res, next) => {
   try {
-    const { firstName, lastName, email, password, role } = req.body;
+    const { fullName, email, role } = req.body;
+    const name = fullName.split(" ");
+    const firstName = name[0];
+    const lastName = fullName.substring(name[0].length).trim();
+
+    if (!firstName || !lastName || !email) {
+      res.status(400).json({
+        title: "Error",
+        message: "Please provide valid name and email",
+      });
+    }
+
+    if (await User.exists({ email })) {
+      res.status(400).json({
+        title: "Error",
+        message: "Email already in use",
+      });
+    }
+    const password = Math.random().toString(36).slice(-8);
     const hashedPassword = await hashPassword(password);
     const newUser = new User({
       firstName,
       lastName,
       email,
+      role,
       password: hashedPassword,
-      role: role || "student",
     });
-    const accessToken = jwt.sign(
-      { userId: newUser._id },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "1d",
-      }
-    );
-    newUser.accessToken = accessToken;
     await newUser.save();
+    transporter.createAccount(newUser, password);
     res.json({
       data: newUser,
-      accessToken,
     });
   } catch (error) {
     next(error);
@@ -269,6 +281,45 @@ exports.getUsers = async (req, res, next) => {
   const users = await User.find({});
   res.status(200).json({
     data: users,
+  });
+};
+
+exports.getStudents = async (req, res, next) => {
+  const students = await User.find(
+    { role: "student" },
+    "firstName lastName email group"
+  );
+  res.render("listUsers", {
+    layout: "default",
+    user: res.locals.loggedInUser.toObject(),
+    userList: students.map((student) => student.toObject()),
+    role: "student",
+  });
+};
+
+exports.getTeachers = async (req, res, next) => {
+  const teachers = await User.find(
+    { role: "teacher" },
+    "firstName lastName email group"
+  );
+  res.render("listUsers", {
+    layout: "default",
+    user: res.locals.loggedInUser.toObject(),
+    userList: teachers.map((teacher) => teacher.toObject()),
+    role: "teacher",
+  });
+};
+
+exports.getAdmins = async (req, res, next) => {
+  const admins = await User.find(
+    { role: "admin" },
+    "firstName lastName email group"
+  );
+  res.render("listUsers", {
+    layout: "default",
+    user: res.locals.loggedInUser.toObject(),
+    userList: admins.map((admin) => admin.toObject()),
+    role: "admin",
   });
 };
 

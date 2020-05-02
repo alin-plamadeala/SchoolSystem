@@ -46,3 +46,25 @@ module.exports.resetPassword = function (link, email) {
     }
   });
 };
+
+module.exports.createAccount = function (user, password) {
+  const mailOptions = {
+    from: "study.cfbc@gmail.com",
+    to: user.email,
+    subject: "Account details",
+    html: `Hello ${user.firstName},<br>
+    A new account has been created for this email.<br>
+    Use these details to log into your account:<br>
+    Email: ${user.email}<br>
+    Password: ${password}<br>
+    We suggest changing the password.
+        `,
+  };
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+  });
+};

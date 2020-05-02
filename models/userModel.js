@@ -32,6 +32,9 @@ const UserSchema = new Schema(
       default: "student",
       enum: ["student", "teacher", "admin"],
     },
+    group: {
+      type: String,
+    },
     accessToken: {
       type: String,
     },
@@ -50,6 +53,9 @@ const UserSchema = new Schema(
   }
 );
 
+UserSchema.virtual("fullName").get(function () {
+  return this.firstName + " " + this.lastName;
+});
 const User = mongoose.model("user", UserSchema);
 
 module.exports = User;

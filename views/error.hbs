@@ -31,10 +31,18 @@
             <h1>{{{title}}}</h1>
             {{{message}}}
             <br><br><br>
-            <p><a href="../">Go to Home</a></p>
+            <p>
+                <button class="btn btn-link" onclick="goBack()">Go Back</button>
+                <a class="btn btn-link" href="../">Go to Home</a></p>
         </div>
 
     </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
 </body>
 
 </html>

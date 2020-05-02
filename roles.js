@@ -9,6 +9,7 @@ exports.roles = (function () {
   ac.grant("admin")
     .extend("student")
     .extend("teacher")
+    .createAny("profile")
     .updateAny("profile")
     .deleteAny("profile");
 

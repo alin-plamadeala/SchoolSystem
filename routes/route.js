@@ -5,40 +5,96 @@ const userController = require("../controllers/userController");
 const indexController = require("../controllers/indexController");
 const confirmationController = require("../controllers/confirmationController");
 
-router.get("/", userController.allowIfLoggedin, indexController.index);
+//authentication page
+router
+  .get("/login", userController.loginPage)
+  .post("/login", userController.login);
 
-router.get("/login", userController.loginPage);
-router.post("/login", userController.login);
+//logout endpoint
 router.get("/logout", userController.logout);
 
-router.get("/forgotPassword", userController.forgotPassword);
-router.post("/forgotPassword", userController.resetPassword);
+//forgot password page
+router
+  .get("/forgotPassword", userController.forgotPassword)
+  .post("/forgotPassword", userController.resetPassword);
 
+//Confirm new password page
+router
+  .get("/confirmResetPassword", confirmationController.getConfirmPasswordReset)
+  .post(
+    "/confirmResetPassword",
+    confirmationController.postConfirmPasswordReset
+  );
+
+//frontpage
+router.get("/", userController.allowIfLoggedin, indexController.index);
+
+//Edit profile page
+router
+  .get(
+    "/myprofile",
+    userController.allowIfLoggedin,
+    userController.grantAccess("readOwn", "profile"),
+    userController.getEditProfile
+  )
+  .post(
+    "/myprofile",
+    userController.allowIfLoggedin,
+    userController.grantAccess("updateOwn", "profile"),
+    userController.postEditProfile
+  );
+
+//Confirm change of email
+router
+  .get("/confirmEmail", confirmationController.getConfirmEmail)
+  .post("/confirmEmail", confirmationController.postConfirmEmail);
+
+//List of Students
 router.get(
-  "/confirmResetPassword",
-  confirmationController.getConfirmPasswordReset
+  "/users/students",
+  userController.allowIfLoggedin,
+  userController.grantAccess("readAny", "profile"),
+  userController.getStudents
+);
+
+//List of Teachers
+router.get(
+  "/users/teachers",
+  userController.allowIfLoggedin,
+  userController.grantAccess("readAny", "profile"),
+  userController.getTeachers
+);
+
+//List of Admins
+router.get(
+  "/users/admins",
+  userController.allowIfLoggedin,
+  userController.grantAccess("readAny", "profile"),
+  userController.getAdmins
+);
+
+//List of teachers
+router.get(
+  "/users/teachers",
+  userController.allowIfLoggedin,
+  userController.grantAccess("readAny", "profile"),
+  userController.getTeachers
+);
+
+//List of teachers
+router.get(
+  "/users/admins",
+  userController.allowIfLoggedin,
+  userController.grantAccess("readAny", "profile"),
+  userController.getAdmins
 );
 
 router.post(
-  "/confirmResetPassword",
-  confirmationController.postConfirmPasswordReset
-);
-
-router.post("/signup", userController.signup);
-
-router.get(
-  "/myprofile",
+  "/users/submit",
   userController.allowIfLoggedin,
-  userController.getEditProfile
+  userController.grantAccess("createAny", "profile"),
+  userController.addUser
 );
-router.post(
-  "/myprofile",
-  userController.allowIfLoggedin,
-  userController.postEditProfile
-);
-
-router.get("/confirmEmail", confirmationController.getConfirmEmail);
-router.post("/confirmEmail", confirmationController.postConfirmEmail);
 
 router.get(
   "/user/:userId",
