@@ -124,8 +124,6 @@ function newUser() {
   }
   button.toggleClass("active");
 }
-
-displayPaginatedContent();
 //config to parse csv files
 config = {
   delimiter: "", // auto-detect
@@ -166,6 +164,7 @@ let csvResult;
 //parse error
 let csvError;
 
+//parse results when upload a file
 function handleUpload() {
   csvResult = null;
   csvError = null;
@@ -173,9 +172,15 @@ function handleUpload() {
   $("#results").html("");
 
   $("#addUserList").hide();
+  $("#processButton").show();
   file = $("#csvFile").prop("files")[0];
   Papa.parse(file, config);
 }
+
+//clear value on click
+$("#csvFile").click(function () {
+  $(this).val("");
+});
 
 //display parsed file
 function showParseResults() {
@@ -214,22 +219,26 @@ $("#addUserList").click(function (e) {
   $.ajax({
     url: "/users/submitList",
     type: "post",
-    data: { csvResult },
+    data: { csvResult, role },
     error: function (data) {
+      console.log(data);
       const errors = data.responseJSON.errors;
-
       for (var i = 0, len = errors.length; i < len; i++) {
         $(`#user${errors[i].index}`)
           .addClass("table-danger")
-          .append(`<td>${errors[i].error}</td>`);
-
-        var x = errors[i];
-        console.log({ index: x.index });
+          .append(`<td id="err">${errors[i].error}</td>`);
       }
+      $("#addUserList").hide();
     },
     success: function (data) {
-      console.log("success");
+      console.log(data);
+      $("#results").addClass("table-success");
+      $(".modal-body").prepend(`<div class="alert alert-success" role="alert">
+      Users succesfully imported!
+    </div>`);
+      $("#addUserList").hide();
     },
   });
 });
-var sex;
+
+displayPaginatedContent();

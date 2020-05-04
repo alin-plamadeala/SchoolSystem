@@ -11,6 +11,7 @@ async function hashPassword(password) {
   return await bcrypt.hash(password, 10);
 }
 
+//render the page to confirm email update
 exports.getConfirmEmail = async (req, res, next) => {
   const reqToken = req.query.token;
   const reqEmail = req.query.email;
@@ -53,7 +54,7 @@ exports.getConfirmEmail = async (req, res, next) => {
     });
   }
 };
-
+//email update
 exports.postConfirmEmail = async (req, res, next) => {
   const reqToken = req.query.token;
   const reqEmail = req.query.email;
@@ -124,7 +125,7 @@ exports.postConfirmEmail = async (req, res, next) => {
     });
   }
 };
-
+//render the page to confirm password reset
 exports.getConfirmPasswordReset = async (req, res, next) => {
   const reqToken = req.query.token;
   const userId = req.query.id;
@@ -163,7 +164,7 @@ exports.getConfirmPasswordReset = async (req, res, next) => {
     });
   }
 };
-
+//reset password
 exports.postConfirmPasswordReset = async (req, res, next) => {
   const reqToken = req.query.token;
   const userId = req.query.id;

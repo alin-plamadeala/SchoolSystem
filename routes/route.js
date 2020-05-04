@@ -110,13 +110,6 @@ router.get(
   userController.getUser
 );
 
-router.get(
-  "/users",
-  userController.allowIfLoggedin,
-  userController.grantAccess("readAny", "profile"),
-  userController.getUsers
-);
-
 router.put(
   "/user/:userId",
   userController.allowIfLoggedin,
