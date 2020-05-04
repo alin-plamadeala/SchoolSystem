@@ -124,5 +124,121 @@ function newUser() {
   }
   button.toggleClass("active");
 }
+//config to parse csv files
+config = {
+  delimiter: "", // auto-detect
+  newline: "", // auto-detect
+  quoteChar: '"',
+  escapeChar: '"',
+  header: false,
+  transformHeader: undefined,
+  dynamicTyping: false,
+  preview: 0,
+  encoding: "",
+  worker: false,
+  comments: false,
+  step: undefined,
+  complete: function (results, file) {
+    console.log("Parsing complete:", results, file);
+    csvResult = [...results.data];
+    csvError = [...results.errors];
+    //remove header
+    csvResult.shift();
+  },
+  error: undefined,
+  download: false,
+  downloadRequestHeaders: undefined,
+  downloadRequestBody: undefined,
+  skipEmptyLines: true,
+  chunk: undefined,
+  fastMode: undefined,
+  beforeFirstChunk: undefined,
+  withCredentials: undefined,
+  transform: undefined,
+  delimitersToGuess: [",", "\t", "|", ";", Papa.RECORD_SEP, Papa.UNIT_SEP],
+};
+//uploaded file
+let file;
+//parse results
+let csvResult;
+//parse error
+let csvError;
+
+//parse results when upload a file
+function handleUpload() {
+  csvResult = null;
+  csvError = null;
+  $("#errors").html("");
+  $("#results").html("");
+
+  $("#addUserList").hide();
+  $("#processButton").show();
+  file = $("#csvFile").prop("files")[0];
+  Papa.parse(file, config);
+}
+
+//clear value on click
+$("#csvFile").click(function () {
+  $(this).val("");
+});
+
+//display parsed file
+function showParseResults() {
+  let htmlData;
+  if (csvError.length != 0) {
+    //display error
+    $("#errors").html(`<div class="alert alert-danger" role="alert">
+An error occured while processing the file.
+</div>`);
+  } else {
+    //remove empty rows
+    for (var i = 0; i < csvResult.length; i++) {
+      if (csvResult[i][0].length === 0 && csvResult[i][1].length === 0) {
+        csvResult.splice(i, 1);
+        i--;
+      }
+    }
+    //display table rows
+    for (var i = 0; i < csvResult.length; i++) {
+      htmlData += `<tr id="user${i}">
+  <th scope="row">${i + 1}</th>
+  <td>${csvResult[i][0]}</td>
+  <td>${csvResult[i][1]}</td>
+  </tr>`;
+    }
+
+    $("#results").html(htmlData);
+    //show submit button
+    $("#addUserList").show();
+  }
+}
+
+//Post parsed file
+$("#addUserList").click(function (e) {
+  e.preventDefault();
+  $.ajax({
+    url: "/users/submitList",
+    type: "post",
+    data: { csvResult, role },
+    error: function (data) {
+      console.log(data);
+      const errors = data.responseJSON.errors;
+      for (var i = 0, len = errors.length; i < len; i++) {
+        $(`#user${errors[i].index}`)
+          .addClass("table-danger")
+          .append(`<td id="err">${errors[i].error}</td>`);
+      }
+      $("#addUserList").hide();
+    },
+    success: function (data) {
+      console.log(data);
+      $("#results").addClass("table-success");
+      $(".modal-body").prepend(`<div class="alert alert-success" role="alert">
+      Users succesfully imported!
+    </div>`);
+      $("#addUserList").hide();
+    },
+  });
+});
 
 displayPaginatedContent();

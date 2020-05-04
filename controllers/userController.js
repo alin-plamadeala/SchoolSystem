@@ -2,10 +2,10 @@ const User = require("../models/userModel");
 const Hash = require("../models/hashModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const cookies = require("cookie-parser");
 const transporter = require("../transporter/transporter");
 const { roles } = require("../roles");
 
+//check if current user has enough permissions
 exports.grantAccess = function (action, resource) {
   return async (req, res, next) => {
     try {
@@ -24,7 +24,7 @@ exports.grantAccess = function (action, resource) {
     }
   };
 };
-
+//check if logged in
 exports.allowIfLoggedin = async (req, res, next) => {
   try {
     const user = res.locals.loggedInUser;
@@ -36,14 +36,17 @@ exports.allowIfLoggedin = async (req, res, next) => {
     next(error);
   }
 };
+//encrypt the password
 async function hashPassword(password) {
   return await bcrypt.hash(password, 10);
 }
 
+//check if password matches
 async function validatePassword(plainPassword, hashedPassword) {
   return await bcrypt.compare(plainPassword, hashedPassword);
 }
 
+//validate profile changes
 async function validateProfile(input, updateUser) {
   var pageErrors = {};
   var changeEmail = false;
@@ -85,6 +88,8 @@ async function validateProfile(input, updateUser) {
 
   return [pageErrors, changeEmail, changePassword];
 }
+
+//edit profile page
 exports.getEditProfile = async (req, res, next) => {
   res.render("editProfile", {
     layout: "default",
@@ -92,6 +97,7 @@ exports.getEditProfile = async (req, res, next) => {
   });
 };
 
+//post profile changes
 exports.postEditProfile = async (req, res, next) => {
   try {
     const profile = {
@@ -156,6 +162,7 @@ exports.postEditProfile = async (req, res, next) => {
   }
 };
 
+//add a user
 exports.addUser = async (req, res, next) => {
   try {
     const { fullName, email, role } = req.body;
@@ -195,17 +202,65 @@ exports.addUser = async (req, res, next) => {
   }
 };
 
+//import multiple users
+exports.addUserList = async (req, res, next) => {
+  try {
+    const { csvResult, role } = req.body;
+    let newUserList = [];
+    let errors = [];
+    for (var i = 0, len = csvResult.length; i < len; i++) {
+      const name = csvResult[i][0].split(" ");
+      const firstName = name[0];
+      const lastName = csvResult[i][0].substring(name[0].length).trim();
+      const email = csvResult[i][1];
+      if (!firstName || !lastName) {
+        errors.push({ error: "Invalid name", index: i });
+      } else if (!email) {
+        errors.push({ error: "Invalid email", index: i });
+      } else if (await User.exists({ email })) {
+        errors.push({ error: "Email already in use", index: i });
+      }
+      newUserList.push({ firstName, lastName, email, role });
+    }
+    if (errors.length === 0) {
+      for (var i = 0, len = newUserList.length; i < len; i++) {
+        user = newUserList[i];
+        const password = Math.random().toString(36).slice(-8);
+        const hashedPassword = await hashPassword(password);
+        user.password = hashedPassword;
+        newUser = new User({
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          password: user.password,
+          role: user.role,
+        });
+        await newUser.save();
+        transporter.createAccount(newUser, password);
+      }
+      res.status(200).json({ message: "Accounts created" });
+    } else {
+      res.status(400).json({ errors });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+//logout
 exports.logout = async (req, res, next) => {
   res.cookie("Authorization", "");
   res.redirect("/login");
 };
 
+//display forgot passsword page
 exports.forgotPassword = async (req, res, next) => {
   res.render("forgotPassword", {
     layout: "loginLayout",
   });
 };
 
+//method to generate a link for recovering password and sending it to user email
 exports.resetPassword = async (req, res, next) => {
   try {
     const email = req.body.email;
@@ -240,6 +295,7 @@ exports.resetPassword = async (req, res, next) => {
   }
 };
 
+//login post method
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -271,19 +327,14 @@ exports.login = async (req, res, next) => {
   }
 };
 
+//render login page
 exports.loginPage = async (req, res, next) => {
   res.render("login", {
     layout: "loginLayout",
   });
 };
 
-exports.getUsers = async (req, res, next) => {
-  const users = await User.find({});
-  res.status(200).json({
-    data: users,
-  });
-};
-
+//return all student users
 exports.getStudents = async (req, res, next) => {
   const students = await User.find(
     { role: "student" },
@@ -296,7 +347,7 @@ exports.getStudents = async (req, res, next) => {
     role: "student",
   });
 };
-
+//return all teacher users
 exports.getTeachers = async (req, res, next) => {
   const teachers = await User.find(
     { role: "teacher" },
@@ -309,7 +360,7 @@ exports.getTeachers = async (req, res, next) => {
     role: "teacher",
   });
 };
-
+//return all admin users
 exports.getAdmins = async (req, res, next) => {
   const admins = await User.find(
     { role: "admin" },
@@ -323,6 +374,7 @@ exports.getAdmins = async (req, res, next) => {
   });
 };
 
+//return a user
 exports.getUser = async (req, res, next) => {
   try {
     const userId = req.params.userId;
@@ -336,6 +388,7 @@ exports.getUser = async (req, res, next) => {
   }
 };
 
+//update a user
 exports.updateUser = async (req, res, next) => {
   try {
     const update = req.body;
@@ -351,6 +404,7 @@ exports.updateUser = async (req, res, next) => {
   }
 };
 
+//delete a user
 exports.deleteUser = async (req, res, next) => {
   try {
     const userId = req.params.userId;

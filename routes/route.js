@@ -81,7 +81,7 @@ router.get(
   userController.getTeachers
 );
 
-//List of teachers
+//List of admins
 router.get(
   "/users/admins",
   userController.allowIfLoggedin,
@@ -89,6 +89,7 @@ router.get(
   userController.getAdmins
 );
 
+//Add user
 router.post(
   "/users/submit",
   userController.allowIfLoggedin,
@@ -96,17 +97,17 @@ router.post(
   userController.addUser
 );
 
+//Add user list
+router.post(
+  "/users/submitList",
+  userController.allowIfLoggedin,
+  userController.grantAccess("createAny", "profile"),
+  userController.addUserList
+);
 router.get(
   "/user/:userId",
   userController.allowIfLoggedin,
   userController.getUser
-);
-
-router.get(
-  "/users",
-  userController.allowIfLoggedin,
-  userController.grantAccess("readAny", "profile"),
-  userController.getUsers
 );
 
 router.put(
