@@ -12,4 +12,23 @@ $(document).ready(function () {
     $(".collapse.in").toggleClass("in");
     $("a[aria-expanded=true]").attr("aria-expanded", "false");
   });
+
+  //Make active and expand the curent item on side menu
+  var loc = ".." + window.location.pathname;
+  $("#sidebar")
+    .find("a")
+    .each(function () {
+      $(this)
+        .parent()
+        .toggleClass("active", $(this).attr("href") == loc);
+    });
+  $("#sidebar")
+    .find("ul.collapse > li.active")
+    .each(function () {
+      $(this)
+        .parent()
+        .addClass("show")
+        .siblings()
+        .attr("aria-expanded", "true");
+    });
 });

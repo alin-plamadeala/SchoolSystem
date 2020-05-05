@@ -175,28 +175,27 @@ exports.addUser = async (req, res, next) => {
         title: "Error",
         message: "Please provide valid name and email",
       });
-    }
-
-    if (await User.exists({ email })) {
+    } else if (await User.exists({ email })) {
       res.status(400).json({
         title: "Error",
         message: "Email already in use",
       });
+    } else {
+      const password = Math.random().toString(36).slice(-8);
+      const hashedPassword = await hashPassword(password);
+      const newUser = new User({
+        firstName,
+        lastName,
+        email,
+        role,
+        password: hashedPassword,
+      });
+      await newUser.save();
+      transporter.createAccount(newUser, password);
+      res.json({
+        data: newUser,
+      });
     }
-    const password = Math.random().toString(36).slice(-8);
-    const hashedPassword = await hashPassword(password);
-    const newUser = new User({
-      firstName,
-      lastName,
-      email,
-      role,
-      password: hashedPassword,
-    });
-    await newUser.save();
-    transporter.createAccount(newUser, password);
-    res.json({
-      data: newUser,
-    });
   } catch (error) {
     next(error);
   }
