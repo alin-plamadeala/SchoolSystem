@@ -298,7 +298,7 @@ exports.resetPassword = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ where: { email } });
     if (!user)
       return res.status(400).render("login", {
         layout: "loginLayout",
@@ -310,17 +310,16 @@ exports.login = async (req, res, next) => {
         layout: "loginLayout",
         pageErrors: { password: "Wrong password!" },
       });
-    const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+    const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
-    await User.findByIdAndUpdate(user._id, { accessToken });
+    await User.update({ accessToken }, { where: { id: user.id } });
     res.cookie("Authorization", accessToken, {
       secure: false,
       httpOnly: true,
     });
-    console.log(user);
+    console.log(user.getDataValue());
     res.redirect("/");
-    //res.status(200).send({ "x-access-token": accessToken });
   } catch (error) {
     next(error);
   }
@@ -335,14 +334,15 @@ exports.loginPage = async (req, res, next) => {
 
 //return all student users
 exports.getStudents = async (req, res, next) => {
-  const students = await User.find(
-    { role: "student" },
-    "firstName lastName email group"
-  );
+  const students = await User.findAll({
+    where: { role: "student" },
+    attributes: ["firstName", "lastName", "email"],
+  });
+  console.log(students);
   res.render("listUsers", {
     layout: "default",
-    user: res.locals.loggedInUser.toObject(),
-    userList: students.map((student) => student.toObject()),
+    user: res.locals.loggedInUser.toJSON(),
+    userList: students.map((student) => student.toJSON()),
     role: "student",
   });
 };

@@ -1,12 +1,14 @@
 const express = require("express");
 const nodemailer = require("nodemailer");
-const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const User = require("./models/userModel");
+const Hash = require("./models/hashModel");
+
 const routes = require("./routes/route.js");
+const { Sequelize } = require("sequelize");
 
 require("dotenv").config();
 
@@ -14,16 +16,12 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-mongoose
-  .connect(process.env.DATA_SOURCE, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
-    useCreateIndex: true,
-  })
-  .then(() => {
-    console.log("Connected to the Database successfully");
-  });
+//database
+const db = require("./config/database");
+//db test
+db.authenticate()
+  .then(() => console.log("Database connected..."))
+  .catch((err) => console.log(err));
 
 app.use(cookieParser());
 
@@ -43,7 +41,7 @@ app.use(async (req, res, next) => {
           error: "JWT token has expired, please login to obtain a new one",
         });
       }
-      res.locals.loggedInUser = await User.findById(userId);
+      res.locals.loggedInUser = await User.findByPk(userId);
       next();
     } catch (error) {
       console.log(error);

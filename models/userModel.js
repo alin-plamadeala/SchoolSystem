@@ -1,46 +1,32 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+const { Sequelize } = require("sequelize");
+const db = require("../config/database");
 
-const UserSchema = new Schema(
+const User = db.define(
+  "user",
   {
     firstName: {
-      type: String,
-      required: true,
-      trim: true,
+      type: Sequelize.STRING,
     },
     lastName: {
-      type: String,
-      required: true,
-      trim: true,
+      type: Sequelize.STRING,
     },
     email: {
-      type: String,
-      required: true,
+      type: Sequelize.STRING,
+      allowNull: false,
       unique: true,
-      trim: true,
     },
     newEmail: {
-      type: String,
-      trim: true,
+      type: Sequelize.STRING,
     },
     password: {
-      type: String,
-      required: true,
+      type: Sequelize.STRING,
     },
     role: {
-      type: String,
-      default: "student",
-      enum: ["student", "teacher", "admin"],
-    },
-    group: {
-      type: String,
+      type: Sequelize.ENUM,
+      values: ["student", "teacher", "admin"],
     },
     accessToken: {
-      type: String,
-    },
-    active: {
-      type: Boolean,
-      default: false,
+      type: Sequelize.STRING,
     },
   },
   {
@@ -52,10 +38,4 @@ const UserSchema = new Schema(
     },
   }
 );
-
-UserSchema.virtual("fullName").get(function () {
-  return this.firstName + " " + this.lastName;
-});
-const User = mongoose.model("user", UserSchema);
-
 module.exports = User;

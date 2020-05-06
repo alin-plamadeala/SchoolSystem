@@ -1,37 +1,25 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+// const { Sequelize } = require("sequelize");
+// const db = require("../config/database");
+// const User = require("../models/userModel");
 
-const HashSchema = new Schema(
-  {
-    _userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: "User",
-    },
+// const Hash = db.define("hash", {
+//   hash: {
+//     type: Sequelize.STRING,
+//   },
+//   userId: {
+//     type: Sequelize.INTEGER,
+//     references: {
+//       model: "user", // name of Target model
+//       key: "id", // key in Target model that we're referencing
+//     },
+//     onUpdate: "CASCADE",
+//     onDelete: "SET NULL",
+//   },
+// });
 
-    hash: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    expire: {
-      type: Date,
-      index: { expireAfterSeconds: 21600 }, // 6 hours
-      default: Date.now(),
-    },
-  },
-  {
-    toObject: {
-      virtuals: true,
-    },
-    toJSON: {
-      virtuals: true,
-    },
-  }
-);
+// Hash.hasOne(User, {
+//   foreignKey: { name: "userId", allowNull: false },
+// });
+// User.belongsTo(Hash);
 
-const Hash = mongoose.model("hash", HashSchema);
-mongoose.model("hash").ensureIndexes(function (err) {
-  console.log("ensure index", err);
-});
-module.exports = Hash;
+// module.exports = Hash;
