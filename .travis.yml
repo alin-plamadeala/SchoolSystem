@@ -11,7 +11,7 @@ deploy:
     local_dir: dpl_cd_upload
     skip_cleanup: true
     on: &2
-      repo: SchoolSystem
+      repo: SchoolSystem.git
     bucket: schoolsystemappbucket
     region: eu-central-1
   - provider: codedeploy
