@@ -5,5 +5,5 @@ files:
     destination: /home/ec2-user/SchoolSystem
 hooks:
   ApplicationStart:
-    - location: scripts/application_start.sh
+    - location: /home/ec2-user/SchoolSystem/scripts/application_start.sh
       timeout: 3000
