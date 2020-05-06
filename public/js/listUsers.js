@@ -1,4 +1,7 @@
 //Object containing the list of users
+userList.forEach((user) => {
+  user.fullName = `${user.firstName} ${user.lastName}`;
+});
 var data = userList;
 
 //pagination of list of users

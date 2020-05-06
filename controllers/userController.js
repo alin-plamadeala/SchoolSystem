@@ -51,11 +51,11 @@ async function validateProfile(input, updateUser) {
   var pageErrors = {};
   var changeEmail = false;
   var changePassword = false;
-  var user = await User.findById(updateUser.id);
+  var user = await User.findByPk(updateUser.id);
   if (input.changeEmail && input.changeEmail != user.email) {
     if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.email)) {
-      await User.countDocuments({ email: input.email }, function (err, count) {
-        if (count != 0) {
+      await User.count({ where: { email: input.email } }).then((count) => {
+        if (count > 0) {
           pageErrors["email"] = "Email already in use";
         } else {
           changeEmail = true;
@@ -93,7 +93,7 @@ async function validateProfile(input, updateUser) {
 exports.getEditProfile = async (req, res, next) => {
   res.render("editProfile", {
     layout: "default",
-    user: res.locals.loggedInUser.toObject(),
+    user: res.locals.loggedInUser.toJSON(),
   });
 };
 
@@ -110,7 +110,7 @@ exports.postEditProfile = async (req, res, next) => {
 
     const validation = await validateProfile(
       profile,
-      res.locals.loggedInUser.toObject()
+      res.locals.loggedInUser.toJSON()
     );
     const pageErrors = validation[0];
     const changeEmail = validation[1];
@@ -119,20 +119,20 @@ exports.postEditProfile = async (req, res, next) => {
     if (Object.keys(pageErrors).length) {
       res.render("editProfile", {
         layout: "default",
-        user: res.locals.loggedInUser.toObject(),
+        user: res.locals.loggedInUser.toJSON(),
         pageErrors: pageErrors,
       });
     } else {
       if (changeEmail) {
-        var userId = res.locals.loggedInUser.id;
-        await User.updateOne({ _id: userId }, { newEmail: profile.email });
+        var user = await User.findByPk(res.locals.loggedInUser.id);
+        user.newEmail = profile.email;
         const random = (Math.random() * Math.floor(1000)).toString();
         const hash = await bcrypt.hash(random, 10);
-        const token = new Hash({
-          _userId: userId,
+        const token = await Hash.create({
+          userId: user.id,
           hash,
         });
-        await token.save();
+        await user.save();
         const link = `${req.protocol}://${req.get("host")}/confirmEmail?token=${
           token.hash
         }&&email=${profile.email}`;
@@ -140,11 +140,9 @@ exports.postEditProfile = async (req, res, next) => {
         var message = `Profile updated! A confirmation message has been sent to ${profile.email}!`;
       }
       if (changePassword) {
-        var userId = res.locals.loggedInUser.id;
-        await User.updateOne(
-          { _id: userId },
-          { password: await hashPassword(profile.newPassword) }
-        );
+        var user = User.findByPk(res.locals.loggedInUser.id);
+        user.password = await hashPassword(profile.newPassword);
+        await user.save();
         if (!message) {
           message = `Profile updated!`;
         }
@@ -152,7 +150,7 @@ exports.postEditProfile = async (req, res, next) => {
       }
       res.render("editProfile", {
         layout: "default",
-        user: res.locals.loggedInUser.toObject(),
+        user: res.locals.loggedInUser.toJSON(),
         message: message,
       });
       //res.json({ pageErrors, changeEmail, changePassword });
@@ -175,7 +173,15 @@ exports.addUser = async (req, res, next) => {
         title: "Error",
         message: "Please provide valid name and email",
       });
-    } else if (await User.exists({ email })) {
+    } else if (
+      await User.count({ where: { email: email } }).then((count) => {
+        if (count > 0) {
+          return true;
+        } else {
+          return false;
+        }
+      })
+    ) {
       res.status(400).json({
         title: "Error",
         message: "Email already in use",
@@ -183,14 +189,13 @@ exports.addUser = async (req, res, next) => {
     } else {
       const password = Math.random().toString(36).slice(-8);
       const hashedPassword = await hashPassword(password);
-      const newUser = new User({
+      const newUser = await User.create({
         firstName,
         lastName,
         email,
         role,
         password: hashedPassword,
       });
-      await newUser.save();
       transporter.createAccount(newUser, password);
       res.json({
         data: newUser,
@@ -216,7 +221,15 @@ exports.addUserList = async (req, res, next) => {
         errors.push({ error: "Invalid name", index: i });
       } else if (!email) {
         errors.push({ error: "Invalid email", index: i });
-      } else if (await User.exists({ email })) {
+      } else if (
+        await User.count({ where: { email: email } }).then((count) => {
+          if (count > 0) {
+            return true;
+          } else {
+            return false;
+          }
+        })
+      ) {
         errors.push({ error: "Email already in use", index: i });
       }
       newUserList.push({ firstName, lastName, email, role });
@@ -227,14 +240,13 @@ exports.addUserList = async (req, res, next) => {
         const password = Math.random().toString(36).slice(-8);
         const hashedPassword = await hashPassword(password);
         user.password = hashedPassword;
-        newUser = new User({
+        newUser = await User.create({
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
           password: user.password,
           role: user.role,
         });
-        await newUser.save();
         transporter.createAccount(newUser, password);
       }
       res.status(200).json({ message: "Accounts created" });
@@ -263,7 +275,7 @@ exports.forgotPassword = async (req, res, next) => {
 exports.resetPassword = async (req, res, next) => {
   try {
     const email = req.body.email;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.render("forgotPassword", {
         layout: "loginLayout",
@@ -274,14 +286,13 @@ exports.resetPassword = async (req, res, next) => {
     } else {
       const random = (Math.random() * Math.floor(1000)).toString();
       const hash = await bcrypt.hash(random, 10);
-      const token = new Hash({
-        _userId: user._id,
+      const token = await Hash.create({
+        userId: user.id,
         hash,
       });
-      await token.save();
       const link = `${req.protocol}://${req.get(
         "host"
-      )}/confirmResetPassword?token=${token.hash}&&id=${user._id}`;
+      )}/confirmResetPassword?token=${token.hash}&&id=${user.id}`;
       transporter.resetPassword(link, user.email);
 
       return res.render("forgotPassword", {
@@ -318,7 +329,6 @@ exports.login = async (req, res, next) => {
       secure: false,
       httpOnly: true,
     });
-    console.log(user.getDataValue());
     res.redirect("/");
   } catch (error) {
     next(error);
@@ -338,7 +348,6 @@ exports.getStudents = async (req, res, next) => {
     where: { role: "student" },
     attributes: ["firstName", "lastName", "email"],
   });
-  console.log(students);
   res.render("listUsers", {
     layout: "default",
     user: res.locals.loggedInUser.toJSON(),
@@ -348,27 +357,27 @@ exports.getStudents = async (req, res, next) => {
 };
 //return all teacher users
 exports.getTeachers = async (req, res, next) => {
-  const teachers = await User.find(
-    { role: "teacher" },
-    "firstName lastName email group"
-  );
+  const students = await User.findAll({
+    where: { role: "teacher" },
+    attributes: ["firstName", "lastName", "email"],
+  });
   res.render("listUsers", {
     layout: "default",
-    user: res.locals.loggedInUser.toObject(),
-    userList: teachers.map((teacher) => teacher.toObject()),
+    user: res.locals.loggedInUser.toJSON(),
+    userList: students.map((student) => student.toJSON()),
     role: "teacher",
   });
 };
 //return all admin users
 exports.getAdmins = async (req, res, next) => {
-  const admins = await User.find(
-    { role: "admin" },
-    "firstName lastName email group"
-  );
+  const students = await User.findAll({
+    where: { role: "admin" },
+    attributes: ["firstName", "lastName", "email"],
+  });
   res.render("listUsers", {
     layout: "default",
-    user: res.locals.loggedInUser.toObject(),
-    userList: admins.map((admin) => admin.toObject()),
+    user: res.locals.loggedInUser.toJSON(),
+    userList: students.map((student) => student.toJSON()),
     role: "admin",
   });
 };
@@ -377,7 +386,7 @@ exports.getAdmins = async (req, res, next) => {
 exports.getUser = async (req, res, next) => {
   try {
     const userId = req.params.userId;
-    const user = await User.findById(userId);
+    const user = await User.findByPk(userId);
     if (!user) return next(new Error("User does not exist"));
     res.status(200).json({
       data: user,

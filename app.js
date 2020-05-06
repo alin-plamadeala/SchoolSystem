@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const User = require("./models/userModel");
-const Hash = require("./models/hashModel");
 
 const routes = require("./routes/route.js");
 const { Sequelize } = require("sequelize");
@@ -35,6 +34,7 @@ app.use(async (req, res, next) => {
         accessToken,
         process.env.JWT_SECRET
       );
+
       // Check if token has expired
       if (exp < Date.now().valueOf() / 1000) {
         return res.status(401).json({

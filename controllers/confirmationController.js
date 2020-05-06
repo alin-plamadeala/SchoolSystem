@@ -18,27 +18,26 @@ exports.getConfirmEmail = async (req, res, next) => {
 
   try {
     if (reqToken && reqEmail) {
-      await Hash.findOne({ hash: reqToken }, function (err, token) {
-        if (!token) {
-          return res.status(400).render("error", {
-            layout: false,
-            title: "Error",
-            message:
-              "We were unable to find a valid token. Your token my have expired.",
-          });
-        }
-        // If we found a token, find a matching user
-        User.findOne({ _id: token._userId, newEmail: reqEmail }, function (
-          err,
-          user
-        ) {
-          res.render("confirmPassword", {
-            layout: "loginLayout",
-            user: user.toObject(),
-            token: token.hash,
-          });
+      var token = await Hash.findOne({ where: { hash: reqToken } });
+      if (!token) {
+        return res.status(400).render("error", {
+          layout: false,
+          title: "Error",
+          message:
+            "We were unable to find a valid token. Your token my have expired.",
         });
-      });
+      } else {
+        // If we found a token, find a matching user
+        var user = await User.findOne({
+          where: { id: token.userId, newEmail: reqEmail },
+        });
+
+        res.render("confirmPassword", {
+          layout: "loginLayout",
+          user: user.toJSON(),
+          token: token.hash,
+        });
+      }
     } else {
       return res.status(400).render("error", {
         layout: false,
@@ -64,56 +63,51 @@ exports.postConfirmEmail = async (req, res, next) => {
 
   try {
     if (reqToken && reqEmail) {
-      await Hash.findOne({ hash: reqToken }, function (err, foundToken) {
-        if (!foundToken) {
-          return res.status(400).render("error", {
-            layout: false,
-            title: "Error",
-            message: "Something went wrong",
-          });
-        }
-        token = foundToken;
-      });
-      // If we found a token, find a matching user
-      await User.findOne({ _id: token._userId, newEmail: reqEmail }, function (
-        err,
-        foundUser
-      ) {
+      var token = await Hash.findOne({ where: { hash: reqToken } });
+      if (!token) {
+        return res.status(400).render("error", {
+          layout: false,
+          title: "Error",
+          message:
+            "We were unable to find a valid token. Your token my have expired.",
+        });
+      } else {
+        // If we found a token, find a matching user
+        var foundUser = await User.findByPk(token.userId);
         if (!foundUser) {
           return res.status(400).render("error", {
             layout: false,
             title: "Error",
             message: "Something went wrong",
           });
+        } else {
+          user = foundUser;
+          if (!password) {
+            return res.status(400).render("confirmPassword", {
+              layout: "loginLayout",
+              user: user.toJSON(),
+              token: token.hash,
+              error: "Please enter the password.",
+            });
+          } else if (!(await validatePassword(password, user.password))) {
+            return res.status(400).render("confirmPassword", {
+              layout: "loginLayout",
+              user: user.toJSON(),
+              token: token.hash,
+              error: "Wrong password..",
+            });
+          } else {
+            user.email = user.newEmail;
+            user.newEmail = null;
+            user.save();
+            token.destroy();
+            return res.render("error", {
+              layout: false,
+              title: "Success",
+              message: "Email updated",
+            });
+          }
         }
-        user = foundUser;
-      });
-      if (!password) {
-        return res.status(400).render("confirmPassword", {
-          layout: "loginLayout",
-          user: user.toObject(),
-          token: token.hash,
-          error: "Please enter the password.",
-        });
-      } else if (!(await validatePassword(password, user.password))) {
-        return res.status(400).render("confirmPassword", {
-          layout: "loginLayout",
-          user: user.toObject(),
-          token: token.hash,
-          error: "Wrong password..",
-        });
-      } else {
-        user.email = user.newEmail;
-        user.newEmail = null;
-        user.save();
-        token.remove();
-
-        await User.findByIdAndUpdate(user._id, { accessToken: null });
-        return res.render("error", {
-          layout: false,
-          title: "Success",
-          message: "Email updated",
-        });
       }
     }
   } catch (error) {
@@ -133,10 +127,8 @@ exports.getConfirmPasswordReset = async (req, res, next) => {
   var user;
   try {
     if (reqToken && userId) {
-      await Hash.findOne({ hash: reqToken }, function (err, resultToken) {
-        token = resultToken;
-      });
-      if (token._userId == userId) {
+      token = await Hash.findOne({ where: { hash: reqToken } });
+      if (token.userId == userId) {
         res.render("resetPassword", {
           layout: "loginLayout",
           reqToken: reqToken,
@@ -173,18 +165,16 @@ exports.postConfirmPasswordReset = async (req, res, next) => {
 
   try {
     if (reqToken && userId) {
-      await Hash.findOne({ hash: reqToken }, function (err, resultToken) {
-        if (!token) {
-          return res.status(400).render("error", {
-            layout: false,
-            title: "Error",
-            message:
-              "We were unable to find a valid token. Your token my have expired.",
-          });
-        }
-        token = resultToken;
-      });
-      if (token._userId == userId) {
+      token = await Hash.findOne({ where: { hash: reqToken } });
+      if (!token) {
+        return res.status(400).render("error", {
+          layout: false,
+          title: "Error",
+          message:
+            "We were unable to find a valid token. Your token my have expired.",
+        });
+      }
+      if (token.userId == userId) {
         if (!newPassword) {
           res.status(400).render("resetPassword", {
             layout: "loginLayout",
@@ -214,10 +204,10 @@ exports.postConfirmPasswordReset = async (req, res, next) => {
             pageErrors: { confirmPassword: "Passwords dont match!" },
           });
         } else {
-          user = await User.findById(userId);
+          user = await User.findByPk(userId);
           user.password = await hashPassword(newPassword);
           await user.save();
-          token.remove();
+          token.destroy();
 
           res.render("error", {
             layout: false,

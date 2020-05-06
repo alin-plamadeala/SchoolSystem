@@ -8,5 +8,6 @@ module.exports = new Sequelize(
   {
     host: "localhost",
     dialect: "postgres",
+    logging: false,
   }
 );
