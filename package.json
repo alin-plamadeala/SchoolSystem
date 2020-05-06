@@ -6,7 +6,7 @@
   "scripts": {
     "start": "sudo pm2 start app.js",
     "start-dev": "cross-env PORT=3000 nodemon app.js",
-    "start-prod": "sudo pm2 start app.js --name "my-api"",
+    "start-prod": "sudo pm2 start app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
