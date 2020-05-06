@@ -3,3 +3,7 @@ os: linux
 files:
   - source: ./
     destination: /home/ec2-user/SchoolSystem
+hooks:
+  ApplicationStart:
+    - location: scripts/application_start.sh
+      timeout: 300
