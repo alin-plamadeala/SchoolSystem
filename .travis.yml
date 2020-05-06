@@ -1,8 +1,33 @@
 language: node_js
 node_js:
   - "stable"
+cache:
+  directories:
+    - node_modules
+deploy:
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    local_dir: dpl_cd_upload
+    skip_cleanup: true
+    on: &2
+      repo: SchoolSystem
+    bucket: schoolsystemappbucket
+    region: eu-central-1
+  - provider: codedeploy
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    bucket: schoolsystemappbucket
+    key: latest.zip
+    bundle_type: zip
+    application: SchoolSystemApp
+    deployment_group: SchoolSystemAppDG
+    region: eu-central-1
+    on: *2
 script:
-  - npm test
+  - zip -r latest *
+  - mkdir -p dpl_cd_upload
+  - mv latest.zip dpl_cd_upload/latest.zip
 after_success:
   - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
   - chmod +x send.sh
