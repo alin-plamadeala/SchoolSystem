@@ -4,9 +4,9 @@
   "description": "A school system with assignments and announcements",
   "main": "app.js",
   "scripts": {
-    "start": "cross-env PORT=80 node app.js",
+    "start": "sudo pm2 start app.js",
     "start-dev": "cross-env PORT=3000 nodemon app.js",
-    "start-prod": "cross-env PORT=80 pm2 start app.js",
+    "start-prod": "sudo pm2 start app.js --name "my-api"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
