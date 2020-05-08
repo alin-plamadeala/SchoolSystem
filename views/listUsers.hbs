@@ -1,5 +1,7 @@
 <script src="/js/pagination.min.js"></script>
 <script src="/js/papaparse.min.js"></script>
+<script src="/js/bootstrap-select.min.js"></script>
+<link rel="stylesheet" href="/css/bootstrap-select.min.css">
 <div id="list"></div>
 
 
@@ -28,13 +30,8 @@
         </button>
     </div>
     <div class="col-sm-2 my-auto">
-        <select class="form-control" id="selectGroup">
+        <select class="form-control" id="selectGroup" data-live-search="true">
             <option value="" selected>Any group</option>
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
-            <option>4</option>
-            <option>5</option>
         </select>
     </div>
     <div class="col-sm-3 my-auto pl-0">
@@ -65,14 +62,22 @@
             <div class="modal-body">
                 <p>Import users from CSV file.</p>
                 <p>The file must contain 2 columns: name and email.</p>
-                <form>
+                <form id="importForm">
                     <div class="form-group">
                         <label for="csvFile">Choose the CSV file to parse</label>
                         <input type="file" class="form-control-file" id="csvFile" accept=".csv"
-                            onchange="handleUpload()">
+                            onchange="handleUpload()" form="importForm" required>
                     </div>
-                    <div class="form-group"> <button type="button" class="btn btn-primary" id="processButton"
-                            onclick="showParseResults()" style="display: none;">Process</button></div>
+                    <div class="form-group">
+                        <label for="group">Group:</label>
+                        <select class="form-control" placeholder="Group" name="group" id="csvGroupSelect"
+                            data-live-search="true" form="importForm" required>
+                            <option value="" selected hidden></option>
+
+                        </select>
+                    </div>
+                    <div class="form-group"> <button type="submit" class="btn btn-primary" id="processButton"
+                            onclick="showParseResults()" form="importForm" style="display: none;">Process</button></div>
 
                 </form>
                 <div id="errors"></div>
@@ -91,7 +96,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="addUserList" style="display: none;">Add users</button>
+                <button type="submit" class="btn btn-primary" type="submit" form="importForm" id="addUserList"
+                    style="display: none;">Add users</button>
             </div>
         </div>
     </div>
@@ -102,7 +108,7 @@
 
 </div>
 
-<div class="table-responsive">
+<div class="">
     <table class="table table-hover table-striped">
         <thead>
             <tr>
@@ -121,6 +127,7 @@
 <div id="pagination"></div>
 <script>
     var userList = {{{ json userList }}}
+    var groupsList = {{{ json groupsList }}}
     var role = {{{ json role }}}
 </script>
 <script src="/js/listUsers.js"></script>

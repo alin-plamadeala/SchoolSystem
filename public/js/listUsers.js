@@ -21,7 +21,7 @@ function displayPaginatedContent() {
         dataHtml += `            <tr>
                   <td>${item.fullName}</td>
                   <td>${item.email}</td>
-                  <td>${item.group}</td>
+                  <td>${item.group.name}</td>
                   <td><a href="#" class="btn btn-outline-info"><i class="fas fa-ellipsis-h"></i></a></td>
               </tr>`;
       });
@@ -39,7 +39,10 @@ function search() {
   //todo include group parameter in search
   console.log(input.group);
   var result = userList.filter(function (student) {
-    if (student.fullName.toLowerCase().indexOf(input.name) != -1) {
+    if (
+      student.fullName.toLowerCase().indexOf(input.name) != -1 &&
+      (student.group.id === parseInt(input.group) || input.group == "")
+    ) {
       return true;
     }
   });
@@ -50,7 +53,7 @@ function search() {
       dataHtml += `            <tr>
                     <td>${item.fullName}</td>
                     <td>${item.email}</td>
-                    <td>${item.group}</td>
+                    <td>${item.group.name}</td>
                     <td><a href="#" class="btn btn-outline-info"><i class="fas fa-ellipsis-h"></i></a></td>
                 </tr>`;
     });
@@ -77,18 +80,23 @@ function newUser() {
     <form  id="addUserForm"></form><input type="hidden" id="role" name="role" value="${role}" form="addUserForm">
         <td><div class="control-group"><input type="text" class="form-control" placeholder="Full Name" name="fullName" id="fullName" form="addUserForm" required></input></div></td>
         <td><div class="control-group"><input type="email" class="form-control" placeholder="Email" name="email" id="email" form="addUserForm" required> </div></td>
-        <td><div class="control-group"><select class="form-control" required>
-                <option>Group 1</option>
-                <option>Group 2</option>
-                <option>Group 3</option>
+        <td><div class="control-group"><select class="form-control" placeholder="Group" name="group" id="groupSelect" form="addUserForm" data-live-search="true" required>
+        <option value="" selected hidden></option>
+        ${groupsList
+          .map((item) => `<option value="${item.id}">${item.name}</option>`)
+          .join("")}
             </select></div></td>
-        <td><div class="form-actions"><button class="btn btn-outline-success" type="submit" name="group" id="group" form="addUserForm"><i class="fa fa-plus" aria-hidden="true"></i></a></div></td>
+        <td><div class="form-actions"><button class="btn btn-outline-success" type="submit" form="addUserForm"><i class="fa fa-plus" aria-hidden="true"></i></a></div></td>
     
 </tr>`;
   const button = $("#addUserButton");
   const container = $("#tbody");
   if ($("#addUser").length === 0) {
     container.prepend(form);
+    $("#groupSelect").selectpicker({
+      style: "btn-default",
+      virtualScroll: true,
+    });
     //Form post action
     $("#addUserForm").submit(function (e) {
       e.preventDefault();
@@ -222,7 +230,7 @@ $("#addUserList").click(function (e) {
   $.ajax({
     url: "/users/submitList",
     type: "post",
-    data: { csvResult, role },
+    data: { csvResult, role, group: parseInt($("#csvGroupSelect").val()) },
     error: function (data) {
       console.log(data);
       const errors = data.responseJSON.errors;
@@ -245,3 +253,16 @@ $("#addUserList").click(function (e) {
 });
 
 displayPaginatedContent();
+$(function () {
+  $("select").selectpicker({ style: "btn-outline-secondary" });
+});
+$("#selectGroup").append(
+  `${groupsList
+    .map((item) => `<option value="${item.id}">${item.name}</option>`)
+    .join("")}`
+);
+$("#csvGroupSelect").append(
+  `${groupsList
+    .map((item) => `<option value="${item.id}">${item.name}</option>`)
+    .join("")}`
+);
