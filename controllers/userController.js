@@ -140,7 +140,7 @@ exports.postEditProfile = async (req, res, next) => {
         var message = `Profile updated! A confirmation message has been sent to ${profile.email}!`;
       }
       if (changePassword) {
-        var user = User.findByPk(res.locals.loggedInUser.id);
+        var user = await User.findByPk(res.locals.loggedInUser.id);
         user.password = await hashPassword(profile.newPassword);
         await user.save();
         if (!message) {
