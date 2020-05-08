@@ -1,29 +1,19 @@
-// const mongoose = require("mongoose");
-// const Schema = mongoose.Schema;
+const { Sequelize } = require("sequelize");
+const db = require("../config/database");
+const Course = require("../models/courseModel");
 
-// const GroupSchema = new Schema(
-//   {
-//     name: {
-//       type: String,
-//       required: true,
-//       unique: true,
-//       trim: true,
-//     },
-//     role: {
-//       type: String,
-//       required: true,
-//       trim: true,
-//     },
-//   },
-//   {
-//     toObject: {
-//       virtuals: true,
-//     },
-//     toJSON: {
-//       virtuals: true,
-//     },
-//   }
-// );
+const Group = db.define("group", {
+  name: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  role: {
+    type: Sequelize.ENUM,
+    values: ["student", "teacher", "admin"],
+  },
+});
 
-// const Group = mongoose.model("group", GroupSchema);
-// module.exports = Group;
+Course.belongsToMany(Group, { through: "group_course" });
+Group.belongsToMany(Course, { through: "group_course" });
+
+module.exports = Group;

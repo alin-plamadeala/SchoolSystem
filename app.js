@@ -5,6 +5,8 @@ const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const User = require("./models/userModel");
+const Course = require("./models/courseModel");
+const Group = require("./models/groupModel");
 
 const routes = require("./routes/route.js");
 const { Sequelize } = require("sequelize");
@@ -17,6 +19,8 @@ const PORT = process.env.PORT || 3000;
 
 //database
 const db = require("./config/database");
+//sync db tables
+db.sync();
 //db test
 db.authenticate()
   .then(() => console.log("Database connected..."))
