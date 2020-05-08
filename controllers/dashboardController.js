@@ -12,37 +12,55 @@ exports.getStudents = async (req, res, next) => {
   const students = await User.findAll({
     where: { role: "student" },
     attributes: ["firstName", "lastName", "email"],
+    include: { model: Group, attributes: ["id", "name"] },
+  });
+  const groups = await Group.findAll({
+    where: { role: "student" },
+    attributes: ["id", "name"],
   });
   res.render("listUsers", {
     layout: "default",
     user: res.locals.loggedInUser.toJSON(),
     userList: students.map((student) => student.toJSON()),
+    groupsList: groups.map((group) => group.toJSON()),
     role: "student",
   });
 };
 //return all teacher users
 exports.getTeachers = async (req, res, next) => {
-  const students = await User.findAll({
+  const teachers = await User.findAll({
     where: { role: "teacher" },
     attributes: ["firstName", "lastName", "email"],
+    include: { model: Group, attributes: ["id", "name"] },
+  });
+  const groups = await Group.findAll({
+    where: { role: "teacher" },
+    attributes: ["id", "name"],
   });
   res.render("listUsers", {
     layout: "default",
     user: res.locals.loggedInUser.toJSON(),
-    userList: students.map((student) => student.toJSON()),
+    userList: teachers.map((teacher) => teacher.toJSON()),
+    groupsList: groups.map((group) => group.toJSON()),
     role: "teacher",
   });
 };
 //return all admin users
 exports.getAdmins = async (req, res, next) => {
-  const students = await User.findAll({
+  const admins = await User.findAll({
     where: { role: "admin" },
     attributes: ["firstName", "lastName", "email"],
+    include: { model: Group, attributes: ["id", "name"] },
+  });
+  const groups = await Group.findAll({
+    where: { role: "admin" },
+    attributes: ["id", "name"],
   });
   res.render("listUsers", {
     layout: "default",
     user: res.locals.loggedInUser.toJSON(),
-    userList: students.map((student) => student.toJSON()),
+    userList: admins.map((admin) => admin.toJSON()),
+    groupsList: groups.map((group) => group.toJSON()),
     role: "admin",
   });
 };
@@ -50,7 +68,7 @@ exports.getAdmins = async (req, res, next) => {
 //add a user
 exports.addUser = async (req, res, next) => {
   try {
-    const { fullName, email, role } = req.body;
+    const { fullName, email, role, group } = req.body;
     const name = fullName.split(" ");
     const firstName = name[0];
     const lastName = fullName.substring(name[0].length).trim();
@@ -59,6 +77,11 @@ exports.addUser = async (req, res, next) => {
       res.status(400).json({
         title: "Error",
         message: "Please provide valid name and email",
+      });
+    } else if (!group) {
+      res.status(400).json({
+        title: "Error",
+        message: "Please select a group",
       });
     } else if (
       await User.count({ where: { email: email } }).then((count) => {
@@ -81,6 +104,7 @@ exports.addUser = async (req, res, next) => {
         lastName,
         email,
         role,
+        groupId: group,
         password: hashedPassword,
       });
       transporter.createAccount(newUser, password);
@@ -96,7 +120,8 @@ exports.addUser = async (req, res, next) => {
 //import multiple users
 exports.addUserList = async (req, res, next) => {
   try {
-    const { csvResult, role } = req.body;
+    const { csvResult, role, group } = req.body;
+    console.log(group);
     let newUserList = [];
     let errors = [];
     for (var i = 0, len = csvResult.length; i < len; i++) {
@@ -106,6 +131,8 @@ exports.addUserList = async (req, res, next) => {
       const email = csvResult[i][1];
       if (!firstName || !lastName) {
         errors.push({ error: "Invalid name", index: i });
+      } else if (isNaN(group)) {
+        errors.push({ error: "Select group", index: i });
       } else if (!email) {
         errors.push({ error: "Invalid email", index: i });
       } else if (
@@ -119,7 +146,7 @@ exports.addUserList = async (req, res, next) => {
       ) {
         errors.push({ error: "Email already in use", index: i });
       }
-      newUserList.push({ firstName, lastName, email, role });
+      newUserList.push({ firstName, lastName, email, role, group });
     }
     if (errors.length === 0) {
       for (var i = 0, len = newUserList.length; i < len; i++) {
@@ -133,6 +160,7 @@ exports.addUserList = async (req, res, next) => {
           email: user.email,
           password: user.password,
           role: user.role,
+          groupId: user.group,
         });
         transporter.createAccount(newUser, password);
       }
@@ -260,6 +288,42 @@ exports.addGroup = async (req, res, next) => {
 
       res.json({
         data: newGroup,
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+//return all teacher departments
+exports.getTeacherDepartments = async (req, res, next) => {
+  const departments = await Group.findAll({
+    where: { role: "teacher" },
+    attributes: ["id", "name"],
+    include: { model: User, as: "members" },
+  });
+  res.render("listDepartments", {
+    layout: "default",
+    user: res.locals.loggedInUser.toJSON(),
+    departmentsList: departments.map((department) => department.toJSON()),
+  });
+};
+//add a teacher department
+exports.addDepartment = async (req, res, next) => {
+  try {
+    const { name, role } = req.body;
+    console.log({ name, role });
+    if (!name) {
+      res.status(400).json({
+        title: "Error",
+        message: "Please provide valid name",
+      });
+    } else {
+      const newDepartment = await Group.create({
+        name,
+        role,
+      });
+      res.json({
+        data: newDepartment,
       });
     }
   } catch (error) {

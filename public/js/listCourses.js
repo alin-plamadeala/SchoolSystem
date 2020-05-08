@@ -154,3 +154,6 @@ $("#selectGroup").append(
     .join("")}`
 );
 displayPaginatedContent();
+$(function () {
+  $("select").selectpicker({ style: "btn-outline-secondary" });
+});

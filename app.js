@@ -20,6 +20,10 @@ const PORT = process.env.PORT || 3000;
 //database
 const db = require("./config/database");
 //sync db tables
+Group.sync();
+User.sync();
+
+Course.sync;
 db.sync();
 //db test
 db.authenticate()

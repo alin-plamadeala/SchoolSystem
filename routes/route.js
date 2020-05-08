@@ -104,18 +104,33 @@ router.post(
 
 //List student groups
 router.get(
-  "/groups/students",
+  "/groups",
   userController.allowIfLoggedin,
   userController.grantAccess("readAny", "group"),
   dashboardController.getStudentGroups
 );
 //Add group
-//List student groups
 router.post(
   "/groups/submit",
   userController.allowIfLoggedin,
   userController.grantAccess("createAny", "group"),
   dashboardController.addGroup
+);
+
+//List teacher departments
+router.get(
+  "/departments",
+  userController.allowIfLoggedin,
+  userController.grantAccess("readAny", "group"),
+  dashboardController.getTeacherDepartments
+);
+
+//Add teacher department
+router.post(
+  "/departments/submit",
+  userController.allowIfLoggedin,
+  userController.grantAccess("createAny", "group"),
+  dashboardController.addDepartment
 );
 
 router.get(
