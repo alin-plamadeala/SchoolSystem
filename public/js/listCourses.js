@@ -85,7 +85,7 @@ function newCourse() {
 <tr id="addCourse">
     <form  id="addCourseForm"></form>
         <td><div class="control-group"><input type="text" class="form-control" placeholder="Course Name" name="name" id="name" form="addCourseForm" required></input></div></td>
-        <td><div class="control-group"><select class="form-control" placeholder="Teacher" name="teacherId" id="teacherId" form="addCourseForm"  required>
+        <td><div class="control-group"><select class="form-control" placeholder="Teacher" name="teacherId" id="teacherId" form="addCourseForm" data-live-search="true" required>
         <option value="" selected disabled hidden>Choose Teacher</option>
         ${teachersList
           .map(
@@ -100,6 +100,10 @@ function newCourse() {
   const container = $("#tbody");
   if ($("#addCourse").length === 0) {
     container.prepend(form);
+    $("#teacherId").selectpicker({
+      style: "btn-default",
+      virtualScroll: true,
+    });
     //Form post action
     $("#addCourseForm").submit(function (e) {
       e.preventDefault();
