@@ -10,5 +10,6 @@ const Course = db.define("course", {
 });
 
 Course.belongsTo(User, { as: "teacher" });
+User.hasMany(Course, { foreignKey: "teacherId" });
 
 module.exports = Course;

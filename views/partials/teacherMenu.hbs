@@ -1,18 +1,35 @@
 <li class="active">
-    <a href="/"><i class="icon fas fa-home"></i> Home</a>
+    <a href="/"><i class="icon fas fa-home fa-fw"></i> Home</a>
+</li>
+<li class="active">
+    <a href="../teacher/createAssignment/"><i class="icon fas fa-plus fa-fw"></i> Create Assignment</a>
 </li>
 <li>
     <a href="#subjectsSubmenu" data-toggle="collapse" aria-expanded="false"
-        class="dropdown-toggle sidebar-dropdown-toggle"><i class="icon fas fa-book"></i> Groups</a>
+        class="dropdown-toggle sidebar-dropdown-toggle"><i class="icon fas fa-book fa-fw"></i> Courses</a>
     <ul class="collapse list-unstyled" id="subjectsSubmenu">
+        {{#if user.courses}}
+        {{#each user.courses}}
         <li>
-            <a href="#">Submenu 1</a>
+            <a href="#groupsSubmenu{{@index}}" data-toggle="collapse" aria-expanded="false"
+                class="dropdown-toggle sidebar-dropdown-toggle">{{this.name}}</a>
+            <ul class="collapse list-unstyled" id="groupsSubmenu{{@index}}">
+                {{#if this.groups}}
+                {{#each this.groups}}
+                <li><a>{{this.name}}</a></li>
+                {{/each}}
+                {{else}}
+                <li>
+                    <a>No groups have this course assigned</a>
+                </li>
+                {{/if}}
+            </ul>
         </li>
+        {{/each}}
+        {{else}}
         <li>
-            <a href="#">Submenu 2</a>
+            <a>No courses assigned to you</a>
         </li>
-        <li>
-            <a href="#">Submenu 3</a>
-        </li>
+        {{/if}}
     </ul>
 </li>

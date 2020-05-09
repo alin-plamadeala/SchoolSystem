@@ -4,13 +4,6 @@ body {
   background: #fafafa;
 }
 
-p {
-  font-family: "Open Sans", sans-serif;
-  font-size: 1.1em;
-  font-weight: 300;
-  line-height: 1.7em;
-  color: #999;
-}
 a,
 a:hover,
 a:focus {
@@ -27,7 +20,11 @@ a:focus {
   margin-bottom: 40px;
   box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 }
-
+.btn-custom {
+  color: #495057;
+  background-color: #fff;
+  border-color: #ced4da;
+}
 /* ---------------------------------------------------
     SIDEBAR STYLE
 ----------------------------------------------------- */
@@ -92,13 +89,22 @@ a[data-toggle="collapse"] {
   display: block;
   position: absolute;
   top: 50%;
-  right: 20px;
+  right: 10px;
   transform: translateY(-50%);
 }
 
 ul ul a {
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 0.9em !important;
   padding-left: 30px !important;
+  background: #337598;
+}
+ul ul ul a {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.9em !important;
+  padding-left: 60px !important;
   background: #337598;
 }
 .nav-item {

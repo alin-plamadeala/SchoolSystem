@@ -1,0 +1,126 @@
+<link rel="stylesheet" href="/css/bootstrap-select.min.css">
+<h3>Create Assignment</h3>
+<form method="POST" id="addAssignment" name="assignment">
+    <div class="form-group">
+        <label for="title">Title</label>
+        <input type="title" class="form-control" id="title" name="title" placeholder="Assignment Title" required>
+    </div>
+    <div class="form-group">
+        <label for="deadline">Deadline</label>
+        <input type="datetime-local" class="form-control" id="deadline" name="deadline" placeholder="DD.MM.YYYY HH:MM"
+            required>
+    </div>
+    <div class="form-group">
+        <label for="course">Course</label>
+        <select class="form-control selectpicker" id="course" name="course" required>
+            <option data-hidden="true"></option>
+        </select>
+    </div>
+    <div class="form-group" id="selectGroups">
+
+    </div>
+    <div class="form-group">
+        <label for="description">Description</label>
+        <textarea name="description" id="description">
+        </textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<script src="/js/bootstrap-select.min.js"></script>
+<script src="/js/ckeditor.js"></script>
+<script>
+    //get all courses that current user teaches
+    var courses = {{{ json user.courses }}}
+    //add each course as an option
+    if (courses.length) {
+        $.each(courses, function (index, course) {
+            $("#course").append(`<option value="${course.id}">${course.name}</option>`)
+        });
+
+    } else {
+        $("#course").append(`<option value="" selected hidden>No courses assigned to you</option>`)
+    }
+    $("#course").selectpicker({ style: "btn-custom" });
+
+    //after course is selected, add each group as options
+    $("#course").change(function () {
+        //selected course
+        var selectedCourse = courses.filter(function (course) {
+            if (course.id === parseInt($("#course").val())) {
+                return true
+            }
+        })[0];
+        if (selectedCourse.groups.length) {
+            $("#selectGroups").html(`        <label for="group">Groups</label>
+        <select class="form-control" id="group" name="groups" multiple required>
+${selectedCourse.groups.map((group) =>
+                `<option value="${group.id}">${group.name}</option>`
+            )}
+        </select>`);
+        }
+        $("#group").selectpicker({ style: "btn-custom" });
+    })
+
+    $(document).ready(function () {
+        $(".selectpicker").selectpicker({ style: "btn-custom" });
+    });
+
+</script>
+<script>
+    ClassicEditor
+        .create(document.querySelector('#description'), {
+
+            toolbar: {
+                items: [
+                    'fontSize',
+                    'bold',
+                    'italic',
+                    'underline',
+                    '|',
+                    'fontColor',
+                    'fontBackgroundColor',
+                    '|',
+                    'alignment',
+                    'link',
+                    'bulletedList',
+                    'numberedList',
+                    'removeFormat',
+                    '|',
+                    'indent',
+                    'outdent',
+                    '|',
+                    'blockQuote',
+                    'insertTable',
+                    'undo',
+                    'redo',
+                    '|',
+                    'heading'
+                ]
+            },
+            language: 'ro',
+            table: {
+                contentToolbar: [
+                    'tableColumn',
+                    'tableRow',
+                    'mergeTableCells'
+                ]
+            },
+            licenseKey: '',
+
+        })
+        .then(editor => {
+            window.editor = editor;
+
+
+
+
+        })
+        .catch(error => {
+            console.error('Oops, something gone wrong!');
+            console.error('Please, report the following error in the https://github.com/ckeditor/ckeditor5 with the build id and the error stack trace:');
+            console.warn('Build id: cym3vehw1kc0-cin0531gfsor');
+            console.error(error);
+        });
+
+</script>

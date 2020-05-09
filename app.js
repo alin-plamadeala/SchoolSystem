@@ -4,11 +4,13 @@ const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const path = require("path");
+//models
 const User = require("./models/userModel");
-const Course = require("./models/courseModel");
 const Group = require("./models/groupModel");
+const Course = require("./models/courseModel");
 
 const routes = require("./routes/route.js");
+const teacherRoutes = require("./routes/teacherRoutes");
 const { Sequelize } = require("sequelize");
 
 require("dotenv").config();
@@ -20,10 +22,6 @@ const PORT = process.env.PORT || 3000;
 //database
 const db = require("./config/database");
 //sync db tables
-Group.sync();
-User.sync();
-
-Course.sync;
 db.sync();
 //db test
 db.authenticate()
@@ -49,7 +47,30 @@ app.use(async (req, res, next) => {
           error: "JWT token has expired, please login to obtain a new one",
         });
       }
-      res.locals.loggedInUser = await User.findByPk(userId);
+      res.locals.loggedInUser = await User.findByPk(userId, {
+        include: [
+          {
+            model: Course,
+            attributes: ["id", "name"],
+            include: [
+              {
+                model: Group,
+                attributes: ["id", "name"],
+              },
+            ],
+          },
+          {
+            model: Group,
+            attributes: ["id", "name"],
+            include: [
+              {
+                model: Course,
+                attributes: ["id", "name"],
+              },
+            ],
+          },
+        ],
+      });
       next();
     } catch (error) {
       console.log(error);
@@ -65,6 +86,7 @@ var hbs = require("express-handlebars");
 app.use(express.static("public"));
 
 app.use("/", routes);
+app.use("/teacher", teacherRoutes);
 
 const hbsHelpers = require("./views/helpers/helpers");
 
