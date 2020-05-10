@@ -1,0 +1,68 @@
+<h3>Assignments for group <strong>{{group.name}}</strong> at course <strong>{{course.name}}</strong></h3>
+<div id="accordion">
+    <div class="card">
+        <div class="card-header" id="activeList">
+            <h5 class="mb-0">
+                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseActive"
+                    aria-expanded="false" aria-controls="collapseActive">
+                    Active Assignments
+                </button>
+            </h5>
+        </div>
+        <div id="collapseActive" class="collapse" aria-labelledby="activeList" data-parent="#accordion">
+            <div class="card-body">
+                {{#if activeAssignments}}
+                <div class="row justify-content-md-center">
+                    {{#each activeAssignments}}
+                    <div class="card bg-light m-3" style="width: 15rem;">
+                        <div class="card-header text-center">{{this.title}}</div>
+                        <div class="card-body">
+                            <p class="h6"><strong>Published:</strong> {{formatDate this.createdAt}}</p>
+                            <p class="h6"><strong>Deadline:</strong> {{formatDate this.deadline}}</p>
+                            <div class="text-center">
+                                <a href="#" class="btn btn-secondary">Details</a>
+                            </div>
+
+                        </div>
+                    </div>
+                    {{/each}}</div>
+                {{else}}
+                <h4>No assignments for this group</h4>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header" id="inactiveList">
+            <h5 class="mb-0">
+                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseInactive"
+                    aria-expanded="false" aria-controls="collapseInactive">
+                    Inctive Assignments
+                </button>
+            </h5>
+        </div>
+        <div id="collapseInactive" class="collapse" aria-labelledby="inactiveList" data-parent="#accordion">
+            <div class="card-body">
+                {{#if inactiveAssignments}}
+                <div class="row justify-content-md-center">
+                    {{#each inactiveAssignments}}
+                    <div class="card bg-light m-3" style="width: 15rem;">
+                        <div class="card-header text-center">{{this.title}}</div>
+                        <div class="card-body">
+                            <p class="h6"><strong>Published:</strong> {{formatDate this.createdAt}}</p>
+                            <p class="h6"><strong>Deadline:</strong> {{formatDate this.deadline}}</p>
+                            <div class="text-center">
+                                <a href="#" class="btn btn-secondary">Details</a>
+                            </div>
+
+                        </div>
+                    </div>
+                    {{/each}}</div>
+                {{else}}
+                <h4>No assignments for this group</h4>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+
+</div>

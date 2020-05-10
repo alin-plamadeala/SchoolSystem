@@ -20,6 +20,11 @@ const Assignment = db.define("assignment", {
     type: Sequelize.DATE,
     allowNull: false,
   },
+  active: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+  },
 });
 
 Group.hasMany(Assignment, { as: "groupAssignments", foreignKey: "groupId" });

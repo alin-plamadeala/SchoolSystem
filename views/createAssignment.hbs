@@ -1,6 +1,14 @@
 <link rel="stylesheet" href="/css/bootstrap-select.min.css">
+{{#if confirmation}}
+<div class="alert alert-success" role="alert">
+    <h3 class="alert-heading">Success!</h4>
+        <hr>
+        <p>Assignment has been successfuly created. You can review the details in the corresponding Course and Group.
+        </p>
+</div>
+{{else}}
 <h3>Create Assignment</h3>
-<form method="POST" id="addAssignment" name="assignment">
+<form method="POST" id="addAssignment" name="assignment" enctype="multipart/form-data">
     <div class="form-group">
         <label for="title">Title</label>
         <input type="title" class="form-control" id="title" name="title" placeholder="Assignment Title" required>
@@ -24,7 +32,14 @@
         <textarea name="description" id="description">
         </textarea>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <div class="form-group dropzone" id="dropfile">
+        <div class="fallback">
+            <input type="file" name="file"
+                accept=".doc, .docx, .csv, .jpg, .jpeg, .png, .pdf, .ppt, .pptx, .rar, .rtf, .txt, .xls, .xlsx, .zip" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="submit">Submit</button>
 </form>
 
 <script src="/js/bootstrap-select.min.js"></script>
@@ -65,6 +80,12 @@ ${selectedCourse.groups.map((group) =>
     $(document).ready(function () {
         $(".selectpicker").selectpicker({ style: "btn-custom" });
     });
+
+
+    $("#addAssignment").submit(() => {
+        $("body").append(`  <div class="spinner"></div>`)
+    })
+
 
 </script>
 <script>
@@ -124,3 +145,4 @@ ${selectedCourse.groups.map((group) =>
         });
 
 </script>
+{{/if}}

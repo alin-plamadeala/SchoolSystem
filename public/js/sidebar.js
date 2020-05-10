@@ -14,7 +14,7 @@ $(document).ready(function () {
   });
 
   //Make active and expand the curent item on side menu
-  var loc = ".." + window.location.pathname;
+  var loc = window.location.pathname;
   $("#sidebar")
     .find("a")
     .each(function () {
@@ -26,6 +26,13 @@ $(document).ready(function () {
     .find("ul.collapse > li.active")
     .each(function () {
       $(this)
+        .parent()
+        .addClass("show")
+        .siblings()
+        .attr("aria-expanded", "true");
+      $(this)
+        .parent()
+        .parent()
         .parent()
         .addClass("show")
         .siblings()

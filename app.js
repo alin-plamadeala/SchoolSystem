@@ -8,11 +8,13 @@ const path = require("path");
 const User = require("./models/userModel");
 const Group = require("./models/groupModel");
 const Course = require("./models/courseModel");
+const AssignmentFile = require("./models/assignmentFiles");
+const Assignment = require("./models/assignmentModel");
 
 const routes = require("./routes/route.js");
 const teacherRoutes = require("./routes/teacherRoutes");
 const { Sequelize } = require("sequelize");
-
+global.__basedir = __dirname;
 require("dotenv").config();
 
 const app = express();
@@ -22,6 +24,8 @@ const PORT = process.env.PORT || 3000;
 //database
 const db = require("./config/database");
 //sync db tables
+AssignmentFile.sync();
+Assignment.sync();
 db.sync();
 //db test
 db.authenticate()
