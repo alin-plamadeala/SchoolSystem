@@ -1,18 +1,14 @@
 <li class="active">
-    <a href="/"><i class="icon fas fa-home"></i> Home</a>
+    <a href="/"><i class="icon fas fa-home fa-fw"></i> Home</a>
 </li>
 <li>
     <a href="#subjectsSubmenu" data-toggle="collapse" aria-expanded="false"
-        class="dropdown-toggle sidebar-dropdown-toggle"><i class="icon fas fa-book"></i> Subjects</a>
+        class="dropdown-toggle sidebar-dropdown-toggle"><i class="icon fas fa-book fa-fw"></i> Courses</a>
     <ul class="collapse list-unstyled" id="subjectsSubmenu">
-        <li>
-            <a href="#">Submenu 1</a>
-        </li>
-        <li>
-            <a href="#">Submenu 2</a>
-        </li>
-        <li>
-            <a href="#">Submenu 3</a>
-        </li>
+        {{#if user.group.courses}}
+        {{#each user.group.courses}}
+        <li><a href="/student/course/{{this.id}}">{{this.name}}</a></li>
+        {{/each}}
+        {{/if}}
     </ul>
 </li>

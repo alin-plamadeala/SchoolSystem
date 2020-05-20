@@ -1,0 +1,331 @@
+<script src="/js/ckeditor.js"></script>
+{{#if assignment}}
+<div id="assignment">
+    <div class="card">
+        <div class="card-header" id="assignmentHeader">
+            <h5 class="mb-0">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#collapseAssignment"
+                    aria-expanded="true" aria-controls="collapseAssignment">
+                    Assignment
+                </button>
+            </h5>
+        </div>
+
+        <div id="collapseAssignment" class="collapse" aria-labelledby="assignmentHeader" data-parent="#assignment">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-auto">
+                        <h3 class="mb-3"><strong>{{assignment.title}}</strong>
+                            <small class="text-muted">Last updated on {{formatDate assignment.updatedAt}}</small></h3>
+                    </div>
+
+                </div>
+                <p class="m-0"><strong>Published: </strong>{{formatDate assignment.createdAt}}</p>
+                <p class="m-0"><strong>Deadline: </strong>{{formatDate assignment.deadline}}</p>
+                <p class="m-0"><strong>Status: </strong>{{#if assignment.active}}Active{{else}}Inactive{{/if}}</p>
+                {{#if assignment.description}}
+                <p class="m-0"><strong>Description: </strong></p>
+                <div class="descriptionContainer">
+                    <div class="description">{{{assignment.description}}}</div>
+                </div>
+                {{/if}}
+                {{#if assignment.file}}
+                <p class="m-0"><strong>Attachment: </strong></p>
+                <div class="block">
+                    <div class="attachment">
+                        <a href=" ../{{assignment.id}}/download">
+                            <span class="fileicon">
+                                <i class="fas fa-file"></i>
+                            </span></a>
+                        <div class="filename"><a href=" ./{{assignment.id}}/download">
+                                {{assignment.file.originalName}}</a></div>
+
+
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+{{/if}}
+
+<!-- <submission -->
+<div id="submission">
+    <div class="card">
+        <div class="card-header" id="submissionHeader">
+            <h5 class="mb-0">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#collapseSubmission"
+                    aria-expanded="true" aria-controls="collapseSubmission">
+                    Submission
+                </button>
+            </h5>
+        </div>
+
+        <div id="collapseSubmission" class="collapse" aria-labelledby="submissionHeader" data-parent="#submission">
+            <div class="card-body" id="submissionBody">
+                {{#if assignment.submissions}}
+                <div id="current-submission">
+                    <small class="text-muted mt-0">Submitted on:
+                        {{formatDate assignment.submissions.0.updatedAt}}</small>
+                    {{#if assignment.submissions.0.submissionText}}
+                    <div class="descriptionContainer">
+                        <div class="description">{{{assignment.submissions.0.submissionText}}}</div>
+                    </div>
+                    {{else}}
+                    <p>No description</p>
+                    {{/if}}
+
+                    {{#if assignment.submissions.0.file}}
+                    <p class="m-0"><strong>Attachment: </strong></p>
+                    <div class="block">
+                        <div class="attachment">
+                            <a href=" ../submission/{{assignment.submissions.0.id}}">
+                                <span class="fileicon">
+                                    <i class="fas fa-file"></i>
+                                </span></a>
+                            <div class="filename"><a href=" ../submission/{{assignment.submissions.0.id}}">
+                                    {{assignment.submissions.0.file.originalName}}</a></div>
+
+
+                        </div>
+                    </div>
+                    {{/if}}
+                    <button class="btn btn-secondary mt-2" id="editSubmission">Edit</button>
+                </div>
+                <div id="edit-submission">
+                </div>
+                {{else}}
+                <form method="POST" id="submitAssignment" name="submitAssignment" enctype="multipart/form-data">
+                    <input type="hidden" id="updateFile" name="updateFile" value="1">
+                    <div class="form-group">
+                        <textarea name="submissionText" id="submissionText">
+                          </textarea>
+                    </div>
+                    <div class="form-group">
+                        <div class="fallback">
+                            <input type="file" name="file" required
+                                accept=".doc, .docx, .csv, .jpg, .jpeg, .png, .pdf, .ppt, .pptx, .rar, .rtf, .txt, .xls, .xlsx, .zip" />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-2" id="submit">Submit</button>
+                </form>
+                <script>
+                    ClassicEditor
+                        .create(document.querySelector('#submissionText'), {
+
+                            toolbar: {
+                                items: [
+                                    'fontSize',
+                                    'bold',
+                                    'italic',
+                                    'underline',
+                                    '|',
+                                    'fontColor',
+                                    'fontBackgroundColor',
+                                    '|',
+                                    'alignment',
+                                    'link',
+                                    'bulletedList',
+                                    'numberedList',
+                                    'removeFormat',
+                                    '|',
+                                    'indent',
+                                    'outdent',
+                                    '|',
+                                    'blockQuote',
+                                    'insertTable',
+                                    'undo',
+                                    'redo',
+                                    '|',
+                                    'heading'
+                                ]
+                            },
+                            language: 'ro',
+                            table: {
+                                contentToolbar: [
+                                    'tableColumn',
+                                    'tableRow',
+                                    'mergeTableCells'
+                                ]
+                            },
+                            licenseKey: '',
+
+                        })
+                        .then(editor => {
+                            window.editor = editor;
+
+
+
+
+                        })
+                        .catch(error => {
+                            console.error('Oops, something gone wrong!');
+                            console.error('Please, report the following error in the https://github.com/ckeditor/ckeditor5 with the build id and the error stack trace:');
+                            console.warn('Build id: cym3vehw1kc0-cin0531gfsor');
+                            console.error(error);
+                        });
+
+                </script>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="feedback">
+    <div class="card">
+        <div class="card-header" id="feedbackHeader">
+            <h5 class="mb-0">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#collapseFeedback" aria-expanded="true"
+                    aria-controls="collapseFeedback">
+                    Feedback
+                </button>
+            </h5>
+        </div>
+
+        <div id="collapseFeedback" class="collapse" aria-labelledby="feedbackHeader" data-parent="#feedback">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-auto">
+                        <small class="text-muted">Last updated on
+                            {{formatDate assignment.submission.feedback.updatedAt}}</small></h3>
+                    </div>
+                </div>
+                <p><strong>Grade: </strong><span
+                        class="badge badge-info p-2">{{assignment.submission.feedback.grade}}</span></p>
+                {{#if assignment.submission.feedback.feedbackText}}
+                <p class="m-0"><strong>Feedback</strong></p>
+                <div class="descriptionContainer my-2">
+                    <div class="description">{{{assignment.submission.feedback.feedbackText}}}</div>
+                </div>
+                {{/if}}
+                {{#if assignment.file}}
+                <p class="m-0"><strong>Attachment: </strong></p>
+                <div class="block">
+                    <div class="attachment">
+                        <a href=" ../{{assignment.id}}/download">
+                            <span class="fileicon">
+                                <i class="fas fa-file"></i>
+                            </span></a>
+                        <div class="filename"><a href=" ./{{assignment.id}}/download">
+                                {{assignment.file.originalName}}</a></div>
+
+
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $("#editSubmission").click(() => {
+        $("#current-submission").hide();
+        $("#edit-submission").html(`
+        <form method="POST" id="submitAssignment" name="submitAssignment" enctype="multipart/form-data">
+            <input type="hidden" id="submissionId" name="submissionId" value="{{assignment.submissions.0.id}}">
+            <input type="hidden" id="fileId" name="fileId" value="{{assignment.submissions.0.file.id}}">
+             <div class="form-group">    
+                <textarea name="submissionText" id="submissionText">{{{assignment.submissions.0.submissionText}}}
+                </textarea>
+            </div>
+            <div class="form-group" id="editFile">
+                <label for="file">Attachment</label>
+                <div id="oldAttachment">
+                {{#if assignment.submissions.0.file}}
+                    <div class="block">
+                        <div class="attachment">
+                            <a href=" ../submission/{{assignment.submissions.0.id}}">
+                            <span class="fileicon">
+                            <i class="fas fa-file"></i>
+                            </span></a>
+                            <div class="filename">
+                                <a href=" ../submission/{{assignment.submissions.0.id}}">
+                                {{assignment.submissions.0.file.originalName}}
+                                </a>
+                            </div>
+                            <span class="remove" id="removeFile"><i class="fas fa-times"></i></span>
+                        </div>
+                    </div>
+                {{else}}
+                <input type="hidden" id="updateFile" name="updateFile" value="1">
+                <input type="file" name="file" class="m-1"
+                accept=".doc, .docx, .csv, .jpg, .jpeg, .png, .pdf, .ppt, .pptx, .rar, .rtf, .txt, .xls, .xlsx, .zip" />
+                {{/if}}
+                </div>
+
+            </div>
+                    <button type="submit" class="btn btn-primary" id="submit">Save Changes</button>
+                    <button class="btn btn-secondary" id="cancel">Cancel</button>
+        </form>
+                `);
+        $("#removeFile").click(() => {
+            $("#editFile").append(`
+            <input type="hidden" id="updateFile" name="updateFile" value="1">
+            <input type="file" name="file" class="m-1" id="newAttachment"
+                accept=".doc, .docx, .csv, .jpg, .jpeg, .png, .pdf, .ppt, .pptx, .rar, .rtf, .txt, .xls, .xlsx, .zip"/>`);
+            $("#oldAttachment").hide()
+        });
+        $("#cancel").click(() => {
+            $("#current-submission").show();
+            $("#edit-submission").html("")
+        })
+        ClassicEditor
+            .create(document.querySelector('#submissionText'), {
+
+                toolbar: {
+                    items: [
+                        'fontSize',
+                        'bold',
+                        'italic',
+                        'underline',
+                        '|',
+                        'fontColor',
+                        'fontBackgroundColor',
+                        '|',
+                        'alignment',
+                        'link',
+                        'bulletedList',
+                        'numberedList',
+                        'removeFormat',
+                        '|',
+                        'indent',
+                        'outdent',
+                        '|',
+                        'blockQuote',
+                        'insertTable',
+                        'undo',
+                        'redo',
+                        '|',
+                        'heading'
+                    ]
+                },
+                language: 'ro',
+                table: {
+                    contentToolbar: [
+                        'tableColumn',
+                        'tableRow',
+                        'mergeTableCells'
+                    ]
+                },
+                licenseKey: '',
+
+            })
+            .then(editor => {
+                window.editor = editor;
+
+
+
+
+            })
+            .catch(error => {
+                console.error('Oops, something gone wrong!');
+                console.error('Please, report the following error in the https://github.com/ckeditor/ckeditor5 with the build id and the error stack trace:');
+                console.warn('Build id: cym3vehw1kc0-cin0531gfsor');
+                console.error(error);
+            });
+    })
+</script>

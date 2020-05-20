@@ -1,13 +1,60 @@
 {{#if assignment}}
-<h3 class="mb-3"><strong>{{assignment.title}}</strong>
-    <small class="text-muted">Last updated on {{formatDate assignment.updatedAt}}</small></h3>
+<div class="row">
+    <div class="col-md-auto">
+        <h3 class="mb-3"><strong>{{assignment.title}}</strong>
+            <small class="text-muted">Last updated on {{formatDate assignment.updatedAt}}</small></h3>
+    </div>
+
+    <div class="col">
+        <p class="text-right">
+            <a class="btn btn-outline-primary" href="./{{assignment.id}}/edit">Edit</a>
+            <button class="btn btn-outline-danger" id="delete">Delete</button></p>
+    </div>
+
+</div>
 <p class="m-0"><strong>Published: </strong>{{formatDate assignment.createdAt}}</p>
 <p class="m-0"><strong>Deadline: </strong>{{formatDate assignment.deadline}}</p>
 <p class="m-0"><strong>Status: </strong>{{#if assignment.active}}Active{{else}}Inactive{{/if}}</p>
 <p class="m-0"><strong>Description: </strong></p>
-{{{assignment.description}}}
+<div class="descriptionContainer">
+    <div class="description">{{{assignment.description}}}</div>
+</div>
 
-<br>
+{{#if assignment.file}}
+<p class="m-0"><strong>Attachment: </strong></p>
+<div class="block">
+    <div class="attachment">
+        <a href=" ../{{assignment.id}}/download">
+            <span class="fileicon">
+                <i class="fas fa-file"></i>
+            </span></a>
+        <div class="filename"><a href=" ./{{assignment.id}}/download">
+                {{assignment.file.originalName}}</a></div>
+
+
+    </div>
+</div>
+{{/if}}
+
+
 {{else}}
 Assignment not found
 {{/if}}
+
+<script>
+
+    $("#delete").click(() => {
+        if (confirm('Are you sure you want to remove this assignment?')) {
+            $.ajax({
+                url: `${window.location.pathname}/delete`,
+                type: 'DELETE',
+                success: function (result) {
+                    console.log(result)
+                }
+            });
+            window.location.href = ("/teacher/course/{{assignment.courseId}}/group/{{assignment.groupId}}");
+        }
+
+    })
+
+</script>

@@ -5,7 +5,7 @@ const userController = require("../controllers/userController");
 const dashboardController = require("../controllers/dashboardController");
 const indexController = require("../controllers/indexController");
 const confirmationController = require("../controllers/confirmationController");
-const teacherController = require("../controllers/teacherController");
+const studentController = require("../controllers/studentController");
 const crypto = require("crypto");
 const path = require("path");
 const multer = require("multer");
@@ -45,46 +45,23 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-router.get("/createAssignment", teacherController.createAssignment);
+router.get("/course/:courseId", studentController.showAssignments);
+
+router.get("/assignment/:assignmentId", studentController.showAssignment);
+
 router.post(
-  "/createAssignment",
+  "/assignment/:assignmentId",
   upload.single("file"),
-  teacherController.postAssignment
+  studentController.submitAssignment
 );
 
+//get assignment file
 router.get(
-  "/course/:courseId/group/:groupId",
-  teacherController.showAssignments
-);
-router.get("/assignment/:assignmentId", teacherController.showAssignment);
-router.get("/assignment/:assignmentId/edit", teacherController.editAssignment);
-router.post(
-  "/assignment/:assignmentId/edit",
-  upload.single("file"),
-  teacherController.saveEdits
-);
-router.delete(
-  "/assignment/:assignmentId/delete",
-  teacherController.deleteAssignment
-);
-router.get(
-  "/assignment/:assignmentId/submissions",
-  teacherController.showSubmissions
+  "/assignment/:assignmentId/download",
+  studentController.getAssignmentFile
 );
 
-router.get(
-  "/assignment/:assignmentId/submission/:submissionId",
-  teacherController.showSubmission
-);
-router.post(
-  "/assignment/:assignmentId/submission/:submissionId",
-  teacherController.submitFeedback
-);
-
-router.get("/assignment/:assignmentId/download", teacherController.getFile);
-router.get(
-  "/assignment/:assignmentId/submission/:submissionId/download",
-  teacherController.getSubmissionFile
-);
+//get submission file
+router.get("/submission/:submissionId", studentController.getSubmissionFile);
 
 module.exports = router;

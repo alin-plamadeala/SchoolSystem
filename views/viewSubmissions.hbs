@@ -1,0 +1,52 @@
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Submission</th>
+            <th scope="col">Feedback</th>
+            <th scope="col">Grade</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each students_submissions}}
+        <tr>
+            <td>{{this.lastName}} {{this.firstName}}</td>
+            {{#if this.submission}}
+            {{#if this.submission.late}}
+            <td>
+                <div class="text-warning"><span><i class="fas fa-exclamation-triangle fa-fw"></i></span> Submitted late
+                </div>
+            </td>
+            {{else}}
+            <td>
+                <div class="text-success"><span><i class="fas fa-check-square fa-fw"></i></span> Submitted</div>
+            </td>
+            {{/if}}
+            {{#if this.submission.feedback}}
+            <td>
+                <a class="badge badge-success p-2" href="./submission/{{this.submission.id}}"><span><i
+                            class="fas fa-check-square fa-fw"></i></span> Review feedback</a>
+            </td>
+            <td>
+                <span class="badge badge-info p-2">{{this.submission.feedback.grade}}</span>
+            </td>
+            {{else}}
+            <td>
+                <a class="badge badge-secondary p-2" href="./submission/{{this.submission.id}}"><span><i
+                            class="fas fa-times-circle fa-fw"></i></span> Give feedback</a>
+            </td>
+            <td>
+                -
+            </td>
+            {{/if}}
+            {{else}}
+            <td>
+                <div class="text-danger"><span><i class="fas fa-times-circle fa-fw"></i></span> Not submitted</div>
+            </td>
+            <td>-</td>
+            <td>-</td>
+            {{/if}}
+        </tr>
+        {{/each}}
+    </tbody>
+</table>

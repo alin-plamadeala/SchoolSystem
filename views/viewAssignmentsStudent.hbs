@@ -1,4 +1,4 @@
-<h3>Assignments for group <strong>{{group.name}}</strong> at course <strong>{{course.name}}</strong></h3>
+<h3>Your assignments for course <strong>{{course.name}}</strong></h3>
 <div id="accordion">
     <div class="card">
         <div class="card-header" id="activeList">
@@ -11,25 +11,19 @@
         </div>
         <div id="collapseActive" class="collapse show" aria-labelledby="activeList" data-parent="#accordion">
             <div class="card-body">
-                {{#if activeAssignments}}
+                {{#if assignments}}
                 <div class="row justify-content-md-center">
-                    {{#each activeAssignments}}
+                    {{#each assignments}}
                     <div class="card bg-light m-3" style="width: 15rem;">
                         <div class="card-header text-center">{{this.title}}</div>
                         <div class="card-body assignmentCard">
                             <p><strong>Published:</strong> {{formatDate this.createdAt}}</p>
                             <p><strong>Deadline:</strong> {{formatDate this.deadline}}</p>
+                            <p><strong>Status:</strong> {{#if this.submissions}}Submitted{{else}}Not submitted{{/if}}
+                            </p>
                             <div class="text-center">
-                                <a href="/teacher/assignment/{{this.id}}" class="btn btn-outline-secondary m-1">View
-                                    Details</a>
-                            </div>
-                            <div class="text-center">
-                                <a href="/teacher/assignment/{{this.id}}/edit"
-                                    class="btn btn-outline-primary m-1">Edit</a>
-                            </div>
-                            <div class="text-center">
-                                <a href="/teacher/assignment/{{this.id}}/submissions"
-                                    class="btn btn-outline-success m-1">View Submissions</a>
+                                <a href="/student/assignment/{{this.id}}" class="btn btn-outline-secondary m-1">View
+                                    Assignment</a>
                             </div>
 
                         </div>

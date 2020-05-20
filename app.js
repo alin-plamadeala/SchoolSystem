@@ -10,9 +10,13 @@ const Group = require("./models/groupModel");
 const Course = require("./models/courseModel");
 const AssignmentFile = require("./models/assignmentFiles");
 const Assignment = require("./models/assignmentModel");
+const Submission = require("./models/submissionModel");
+const SubmissionFile = require("./models/submissionFiles");
+const Feedback = require("./models/feedbackModel");
 
-const routes = require("./routes/route.js");
+const routes = require("./routes/route");
 const teacherRoutes = require("./routes/teacherRoutes");
+const studentRoutes = require("./routes/studentRoutes");
 const { Sequelize } = require("sequelize");
 global.__basedir = __dirname;
 require("dotenv").config();
@@ -26,6 +30,9 @@ const db = require("./config/database");
 //sync db tables
 AssignmentFile.sync();
 Assignment.sync();
+Submission.sync();
+SubmissionFile.sync();
+Feedback.sync();
 db.sync();
 //db test
 db.authenticate()
@@ -91,6 +98,7 @@ app.use(express.static("public"));
 
 app.use("/", routes);
 app.use("/teacher", teacherRoutes);
+app.use("/student", studentRoutes);
 
 const hbsHelpers = require("./views/helpers/helpers");
 

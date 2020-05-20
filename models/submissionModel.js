@@ -7,15 +7,13 @@ const Submission = db.define("submission", {
   id: {
     primaryKey: true,
     type: Sequelize.UUID,
-  },
-  submitDate: {
-    type: Sequelize.DATE,
+    defaultValue: Sequelize.UUIDV4,
   },
   submissionText: {
     type: Sequelize.TEXT,
   },
-  files: {
-    type: Sequelize.STRING,
+  late: {
+    type: Sequelize.BOOLEAN,
   },
 });
 

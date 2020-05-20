@@ -33,6 +33,7 @@
     "nodemailer": "^6.4.6",
     "pg": "^8.0.3",
     "pg-hstore": "^2.3.3",
+    "sanitize-html": "^1.23.0",
     "sequelize": "^5.21.7"
   },
   "devDependencies": {

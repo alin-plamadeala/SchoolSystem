@@ -15,6 +15,31 @@ var hbsHelpers = {
       return datetime;
     }
   },
+  formatDateISO: function (dateTime) {
+    if (moment) {
+      // can use other formats like 'lll' too
+      format = "YYYY-MM-DDTHH:mm";
+      return moment(dateTime).utc(true).format(format);
+    } else {
+      return datetime;
+    }
+  },
+  dateDifference: function (date1, date2) {
+    // can use other formats like 'lll' too
+    var start = moment(date1);
+    var end = moment(date2);
+    var dif = Math.abs(start.diff(end, "days"));
+    var difference = `${dif} days`;
+    if (dif == 0) {
+      dif = Math.abs(start.diff(end, "hours"));
+      difference = `${dif} hours`;
+    }
+    if (dif == 0) {
+      dif = Math.abs(start.diff(end, "minutes"));
+      difference = `${dif} minutes`;
+    }
+    return difference;
+  },
 };
 
 module.exports = hbsHelpers;

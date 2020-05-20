@@ -1,0 +1,161 @@
+<h3>Review Submission</h3>
+<hr>
+
+<div class="row">
+    <div class="col-12">
+        <div class="container-fluid border rounded my-2 py-2">
+            <div class="row">
+                <div class="col-12 col-md-auto">
+                    <div class="container ">
+                        <h4>Assignment</h4>
+                        <p><strong>Assignment: </strong>
+                            <a class="btn-link" href="/teacher/assignment/{{assignment.id}}">{{assignment.title}}</a>
+                        </p>
+                        <p><strong>Course: </strong>{{assignment.course.name}}</a></p>
+                        <p><strong>Deadline: </strong>{{formatDate assignment.deadline}}</p>
+                    </div>
+                </div>
+                <div class="border"></div>
+                <div class="col-12 col-md-auto">
+                    <div class="container ">
+                        <h4>Student</h4>
+                        <p><strong>Name: </strong>{{submission.user.firstName}} {{submission.user.lastName}}</a></p>
+                        <p><strong>Group: </strong>{{submission.user.group.name}}</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="container-fluid border rounded my-2 py-2">
+            <h4>Submission</h4>
+            <p><strong>Submitted at: </strong>{{formatDate submission.updatedAt}}</a>
+                {{#if submission.late}}
+                <span class="badge badge-warning">
+                    <i class="fas fa-exclamation-triangle fa-fw"></i>
+                    {{dateDifference assignment.deadline submission.updatedAt}} late
+                </span>
+                {{/if}}</p>
+            {{#if submission.submissionText}}
+            <p class="m-0"><strong>Description</strong></p>
+            <div class="descriptionContainer my-2">
+                <div class="description">{{{submission.submissionText}}}</div>
+            </div>
+            {{/if}}
+            {{#if submission.file}}
+            <p class="m-0"><strong>Attachment: </strong></p>
+            <div class="block my-2">
+                <div class="attachment">
+                    <a href=" ../{{submission.id}}/download">
+                        <span class="fileicon">
+                            <i class="fas fa-file"></i>
+                        </span></a>
+                    <div class="filename"><a href=" ./{{submission.id}}/download">
+                            {{submission.file.originalName}}</a></div>
+
+
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="container-fluid border rounded my-2 py-2">
+            <h4>Feedback</h4>
+            {{#if submission.feedback}}
+            <p><strong>Grade: </strong><span class="badge badge-info p-2">{{submission.feedback.grade}}</span></p>
+            <p class="m-0"><strong>Feedback</strong></p>
+            <div class="descriptionContainer my-2">
+                <div class="description">{{{submission.feedback.feedbackText}}}</div>
+            </div>
+            {{else}}
+            <form method="POST">
+                <div class="form-group">
+                    <label for="grade">Grade</label>
+                    <select class="form-control" id="grade" name="grade">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                        <option>9</option>
+                        <option>10</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="feedbackText">Description</label>
+                    <textarea name="feedbackText" id="feedbackText">
+                    </textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Give feedback</button>
+            </form>
+            {{/if}}
+        </div>
+    </div>
+</div>
+<script src="/js/ckeditor.js"></script>
+<script>
+    ClassicEditor
+        .create(document.querySelector('#feedbackText'), {
+            toolbar: {
+                items: [
+                    'fontSize',
+                    'bold',
+                    'italic',
+                    'underline',
+                    '|',
+                    'fontColor',
+                    'fontBackgroundColor',
+                    '|',
+                    'alignment',
+                    'link',
+                    'bulletedList',
+                    'numberedList',
+                    'removeFormat',
+                    '|',
+                    'indent',
+                    'outdent',
+                    '|',
+                    'blockQuote',
+                    'insertTable',
+                    'undo',
+                    'redo',
+                    '|',
+                    'heading'
+                ]
+            },
+            language: 'ro',
+            table: {
+                contentToolbar: [
+                    'tableColumn',
+                    'tableRow',
+                    'mergeTableCells'
+                ]
+            },
+            licenseKey: '',
+
+        })
+        .then(editor => {
+            window.editor = editor;
+
+
+
+
+        })
+        .catch(error => {
+            console.error('Oops, something gone wrong!');
+            console.error('Please, report the following error in the https://github.com/ckeditor/ckeditor5 with the build id and the error stack trace:');
+            console.warn('Build id: cym3vehw1kc0-cin0531gfsor');
+            console.error(error);
+        });
+
+</script>
