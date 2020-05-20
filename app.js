@@ -33,6 +33,7 @@ Assignment.sync();
 Submission.sync();
 SubmissionFile.sync();
 Feedback.sync();
+User.sync();
 db.sync();
 //db test
 db.authenticate()
