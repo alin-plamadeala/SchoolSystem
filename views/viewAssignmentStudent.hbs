@@ -172,7 +172,7 @@
         </div>
     </div>
 </div>
-
+{{!-- feedback --}}
 <div id="feedback">
     <div class="card">
         <div class="card-header" id="feedbackHeader">
@@ -183,37 +183,25 @@
                 </button>
             </h5>
         </div>
-
         <div id="collapseFeedback" class="collapse" aria-labelledby="feedbackHeader" data-parent="#feedback">
             <div class="card-body">
+                {{#if assignment.submissions.0.feedback}}
                 <div class="row">
                     <div class="col-md-auto">
                         <small class="text-muted">Last updated on
-                            {{formatDate assignment.submission.feedback.updatedAt}}</small></h3>
+                            {{formatDate assignment.submissions.0.feedback.updatedAt}}</small></h3>
                     </div>
                 </div>
                 <p><strong>Grade: </strong><span
-                        class="badge badge-info p-2">{{assignment.submission.feedback.grade}}</span></p>
-                {{#if assignment.submission.feedback.feedbackText}}
+                        class="badge badge-info p-2">{{assignment.submissions.0.feedback.grade}}</span></p>
+                {{#if assignment.submissions.0.feedback.feedbackText}}
                 <p class="m-0"><strong>Feedback</strong></p>
                 <div class="descriptionContainer my-2">
-                    <div class="description">{{{assignment.submission.feedback.feedbackText}}}</div>
+                    <div class="description">{{{assignment.submissions.0.feedback.feedbackText}}}</div>
                 </div>
                 {{/if}}
-                {{#if assignment.file}}
-                <p class="m-0"><strong>Attachment: </strong></p>
-                <div class="block">
-                    <div class="attachment">
-                        <a href=" ../{{assignment.id}}/download">
-                            <span class="fileicon">
-                                <i class="fas fa-file"></i>
-                            </span></a>
-                        <div class="filename"><a href=" ./{{assignment.id}}/download">
-                                {{assignment.file.originalName}}</a></div>
-
-
-                    </div>
-                </div>
+                {{else}}
+                <p><i>No feedback available</i></p>
                 {{/if}}
             </div>
         </div>
