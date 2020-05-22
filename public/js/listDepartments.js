@@ -27,7 +27,6 @@ function displayPaginatedContent() {
                         `<span class="badge badge-secondary m-1">${member.firstName} ${member.lastName}</span>`
                     )
                     .join("")}</td>
-                  <td><a href="#" class="btn btn-outline-info"><i class="fas fa-ellipsis-h"></i></a></td>
               </tr>`;
       });
       container = $("#tbody");
@@ -58,7 +57,6 @@ function search() {
             `<span class="badge badge-secondary m-1">${member.firstName} ${member.lastName}</span>`
         )
         .join("")}</td>
-      <td><a href="#" class="btn btn-outline-info"><i class="fas fa-ellipsis-h"></i></a></td>
   </tr>`;
     });
   } else {

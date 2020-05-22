@@ -265,7 +265,7 @@ exports.getCourses = async (req, res, next) => {
 //add a course
 exports.addCourse = async (req, res, next) => {
   try {
-    const { name, teacherId } = req.body;
+    const { id, name, teacherId } = req.body;
 
     if (!name || !teacherId) {
       res.status(400).json({
@@ -273,14 +273,59 @@ exports.addCourse = async (req, res, next) => {
         message: "Please provide valid name and teacher",
       });
     } else {
-      const newCourse = await Course.create({
-        name,
-        teacherId,
-      });
-      res.json({
-        data: newCourse,
-      });
+      if (id) {
+        const updatedCourse = await Course.update(
+          { name, teacherId },
+          { where: { id } }
+        );
+        res.json({
+          data: updatedCourse,
+        });
+      } else {
+        const newCourse = await Course.create({
+          name,
+          teacherId,
+        });
+        res.json({
+          data: newCourse,
+        });
+      }
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get a course
+exports.getCourse = async (req, res, next) => {
+  const { courseId } = req.params;
+
+  try {
+    course = await Course.findByPk(courseId, {
+      attributes: ["id", "name"],
+      include: [
+        {
+          model: User,
+          as: "teacher",
+          attributes: ["id", "firstName", "lastName"],
+        },
+      ],
+    });
+    if (course) {
+      res.json(course.toJSON());
+    } else {
+      res.json({ message: "not found" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+//remove course
+exports.removeCourse = async (req, res, next) => {
+  const { courseId } = req.params;
+
+  try {
+    await Course.destroy({ where: { id: courseId } });
   } catch (error) {
     next(error);
   }
@@ -331,27 +376,83 @@ exports.getStudentGroups = async (req, res, next) => {
 //add a group
 exports.addGroup = async (req, res, next) => {
   try {
-    const { name, role, courses } = req.body;
+    const { id, name, role, courses } = req.body;
     if (!name) {
       res.status(400).json({
         title: "Error",
         message: "Please provide valid name",
       });
     } else {
-      const newGroup = await Group.create({
-        name,
-        role,
-      });
-      await newGroup.setCourses(courses);
+      if (id) {
+        const updatedGroup = await Group.update(
+          {
+            name,
+          },
+          { returning: true, where: { id } }
+        );
+        await updatedGroup[1][0].setCourses(courses);
 
-      res.json({
-        data: newGroup,
-      });
+        res.json({
+          data: updatedGroup,
+        });
+      } else {
+        const newGroup = await Group.create({
+          name,
+          role,
+        });
+        await newGroup.setCourses(courses);
+
+        res.json({
+          data: newGroup,
+        });
+      }
     }
   } catch (error) {
     next(error);
   }
 };
+
+// get a group
+exports.getGroup = async (req, res, next) => {
+  const { groupId } = req.params;
+
+  try {
+    group = await Group.findByPk(groupId, {
+      attributes: ["id", "name"],
+      include: [
+        {
+          model: Course,
+          attributes: ["id", "name"],
+          include: [
+            {
+              model: User,
+              as: "teacher",
+              attributes: ["id", "firstName", "lastName"],
+            },
+          ],
+        },
+      ],
+    });
+    if (group) {
+      res.json(group.toJSON());
+    } else {
+      res.json({ message: "not found" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+//remove group
+exports.removeGroup = async (req, res, next) => {
+  const { groupId } = req.params;
+
+  try {
+    await Group.destroy({ where: { id: groupId } });
+  } catch (error) {
+    next(error);
+  }
+};
+
 //return all teacher departments
 exports.getTeacherDepartments = async (req, res, next) => {
   const departments = await Group.findAll({

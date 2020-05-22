@@ -18,7 +18,7 @@ function displayPaginatedContent() {
       var dataHtml;
       $.each(data, function (index, item) {
         console.log(item);
-        dataHtml += `            <tr>
+        dataHtml += `            <tr id="${item.id}">
                   <td>${item.name}</td>
                   <td>${item.courses
                     .map(
@@ -26,7 +26,14 @@ function displayPaginatedContent() {
                         `<a class="btn btn-secondary btn-sm  m-1" href="#">${course.name} <span class="badge badge-light">${course.teacher.firstName} ${course.teacher.lastName}</span></a>`
                     )
                     .join(" ")}</td>
-                  <td><a href="#" class="btn btn-outline-info"><i class="fas fa-ellipsis-h"></i></a></td>
+                  <td>
+                  <button type="button" onclick="removeGroup(${
+                    item.id
+                  })" class="btn btn-danger">Delete</button>
+                  <button type="button" onclick="editGroup(${
+                    item.id
+                  })"class="btn btn-info">Edit</button>
+                  </td>
               </tr>`;
       });
       container = $("#tbody");
@@ -60,7 +67,7 @@ function search() {
   var dataHtml;
   if (result.length) {
     $.each(result, function (index, item) {
-      dataHtml += `            <tr>
+      dataHtml += `            <tr id="${item.id}">
       <td>${item.name}</td>
       <td>${item.courses
         .map(
@@ -68,7 +75,14 @@ function search() {
             `<a class="btn btn-secondary btn-sm  m-1" href="#">${course.name} <span class="badge badge-light">${course.teacher.firstName} ${course.teacher.lastName}</span></a>`
         )
         .join(" ")}</td>
-      <td><a href="#" class="btn btn-outline-info"><i class="fas fa-ellipsis-h"></i></a></td>
+      <td>
+      <button type="button" onclick="removeGroup(${
+        item.id
+      })" class="btn btn-danger">Delete</button>
+      <button type="button" onclick="editGroup(${
+        item.id
+      })"class="btn btn-info">Edit</button>
+      </td>
   </tr>`;
     });
   } else {
@@ -152,6 +166,117 @@ function newGroup() {
     $("#addGroup").remove();
   }
   button.toggleClass("active");
+}
+
+//remove group
+function removeGroup(id) {
+  if (confirm("Are you sure you want to delete this Group?")) {
+    $.ajax({
+      url: `/groups/remove/${id}`,
+      type: "DELETE",
+      success: function (result) {
+        console.log(result);
+      },
+    });
+    $(`#${id}`).hide();
+  }
+}
+
+//edit group
+function editGroup(id) {
+  var group;
+  $.ajax({
+    url: `/groups/get/${id}`,
+    type: "GET",
+    success: function (result) {
+      group = result;
+      if (group) {
+        $(`#${id}`).html(`
+            <form id="editGroupForm"></form>
+            <input type="hidden" id="id" name="id" value="${id}" form="editGroupForm">
+            <td><div class="control-group"><input value="${
+              group.name
+            }" type="text" class="form-control" placeholder="Group Name" name="name" id="name" form="editGroupForm" required></input></div></td>
+        <td><div class="control-group"><select class="form-control" placeholder="Courses" name="courses" id="courseSelect" form="editGroupForm" data-live-search="true"   required multiple >
+        ${courseList
+          .map((item) =>
+            group.courses.map((course) => course.id).includes(item.id)
+              ? `<option selected value="${item.id}" data-subtext="${item.teacher.firstName} ${item.teacher.lastName}">${item.name}</option>`
+              : `<option value="${item.id}" data-subtext="${item.teacher.firstName} ${item.teacher.lastName}">${item.name}</option>`
+          )
+          .join("")}
+            </select></div></td>
+        <td><div class="form-actions"><button class="btn btn-outline-success" type="submit" name="group" id="group" form="editGroupForm"><i class="fa fa-plus" aria-hidden="true"></i></a></div></td>
+    
+    `);
+        $("#courseSelect").selectpicker({
+          style: "btn-default",
+          virtualScroll: true,
+        });
+      }
+
+      $("#editGroupForm").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+          url: "/groups/submit",
+          type: "post",
+          data: $("#editGroupForm").serialize(),
+          error: function (data) {
+            var message = data.responseJSON;
+            //Display error
+            $("#alert")
+              .html(`<div class="alert alert-danger  alert-dismissible fade show" role="alert">
+            <strong>${message.title}!</strong> ${message.message}.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>`);
+          },
+          success: function (data) {
+            console.log({ data });
+            var group = data.data;
+            //Display success
+            $("#alert")
+              .html(`<div class="alert alert-success  alert-dismissible fade show" role="alert">
+            <strong>Success!</strong> Group updated!
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>`);
+            resetRow(id);
+          },
+        });
+      });
+    },
+  });
+}
+
+//Refresh row
+function resetRow(id) {
+  var group;
+  $.ajax({
+    url: `groups/get/${id}`,
+    type: "GET",
+    success: function (result) {
+      group = result;
+      $(`#${id}`).html(`
+      <td>${group.name}</td>
+      <td>${group.courses
+        .map(
+          (course) =>
+            `<a class="btn btn-secondary btn-sm  m-1" href="#">${course.name} <span class="badge badge-light">${course.teacher.firstName} ${course.teacher.lastName}</span></a>`
+        )
+        .join(" ")}</td>
+      <td>
+      <button type="button" onclick="removeGroup(${
+        group.id
+      })" class="btn btn-danger">Delete</button>
+      <button type="button" onclick="editGroup(${
+        group.id
+      })"class="btn btn-info">Edit</button>
+      </td>`);
+    },
+  });
 }
 
 $("#selectCourse").append(
