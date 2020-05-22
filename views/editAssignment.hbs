@@ -8,10 +8,21 @@
 
     </div>
     <div class="form-group">
-        <label for="deadline">Deadline</label>
-        <input type="datetime-local" class="form-control" id="deadline" name="deadline"
-            value="{{formatDateISO assignment.deadline}}" placeholder="DD.MM.YYYY HH:MM" required>
+        <div class="form-row">
+            <label for="deadline">Deadline</label>
+        </div>
+        <div class="form-row">
+            <div class="col">
+                <input type="date" class="form-control" id="deadlineDate" name="date" value="{{assignment.date}}"
+                    placeholder="DD.MM.YYYY" required>
+            </div>
+            <div class="col">
+                <input type="time" class="form-control" id="deadlineTime" name="time" value="{{assignment.time}}"
+                    placeholder="HH:MM" required>
+            </div>
+        </div>
     </div>
+
     <div class="form-group">
         <label for="description">Description</label>
         <textarea name="description" id="description">
@@ -42,7 +53,7 @@
             accept=".doc, .docx, .csv, .jpg, .jpeg, .png, .pdf, .ppt, .pptx, .rar, .rtf, .txt, .xls, .xlsx, .zip" />
     </div>
     <button type="submit" class="btn btn-primary" id="submit">Save changes</button>
-    <a href="../{{assignment.id}}" class="btn btn-secondary">Cancel</button>
+    <a href="../{{assignment.id}}" class="btn btn-secondary">Cancel</a>
 </form>
 
 <script src="/js/bootstrap-select.min.js"></script>

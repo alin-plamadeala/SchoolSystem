@@ -6,6 +6,7 @@ const AssignmentFile = require("../models/assignmentFiles");
 const Submission = require("../models/submissionModel");
 const SubmissionFile = require("../models/submissionFiles");
 const Feedback = require("../models/feedbackModel");
+const moment = require("moment");
 
 const sanitizeHtml = require("sanitize-html");
 
@@ -19,7 +20,7 @@ exports.createAssignment = async (req, res, next) => {
 };
 
 exports.postAssignment = async (req, res, next) => {
-  const { title, deadline, course, groups, description } = req.body;
+  const { title, date, time, course, groups, description } = req.body;
   const file = req.file;
   var newFile;
   if (file) {
@@ -30,6 +31,7 @@ exports.postAssignment = async (req, res, next) => {
   }
   //sanitize description html
   var descriptionClean = sanitizeHtml(description);
+  const deadline = moment(date + " " + time);
   if (Array.isArray(groups)) {
     var newAssignments = [];
     for (var i = 0; i < groups.length; i++) {
@@ -78,17 +80,21 @@ exports.postAssignment = async (req, res, next) => {
 exports.editAssignment = async (req, res, next) => {
   const { assignmentId } = req.params;
   try {
-    const assignment = await Assignment.findByPk(assignmentId, {
+    var assignment = await Assignment.findByPk(assignmentId, {
       include: [{ model: AssignmentFile, as: "file" }],
     });
+    assignment = assignment.toJSON();
+    assignment.date = moment(assignment.deadline).format("YYYY-MM-DD");
+    assignment.time = moment(assignment.deadline).format("HH:mm");
     res.render("editAssignment", {
       layout: "default",
       template: "home-template",
       title: "Edit Assignment",
-      assignment: assignment.toJSON(),
+      assignment: assignment,
       user: res.locals.loggedInUser.toJSON(),
     });
   } catch (error) {
+    console.log(error);
     res.render("viewAssignment", {
       layout: "default",
       template: "home-template",
@@ -99,10 +105,11 @@ exports.editAssignment = async (req, res, next) => {
 };
 
 exports.saveEdits = async (req, res, next) => {
-  const { id, title, deadline, description } = req.body;
+  const { id, title, date, time, description } = req.body;
   const file = req.file;
   var newFile;
-  console.log({ id, title, deadline, description });
+
+  const deadline = moment(date + " " + time);
 
   //sanitize description html
   var descriptionClean = sanitizeHtml(description);
@@ -141,7 +148,6 @@ exports.deleteAssignment = async (req, res, next) => {
 };
 exports.showAssignments = async (req, res, next) => {
   const { courseId, groupId } = req.params;
-  console.log({ courseId, groupId });
   const course = await Course.findByPk(courseId, { attributes: ["name"] });
   const group = await Group.findByPk(groupId, { attributes: ["name"] });
 
