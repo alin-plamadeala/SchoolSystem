@@ -18,11 +18,17 @@ function displayPaginatedContent() {
         .addClass("page-link");
       var dataHtml;
       $.each(data, function (index, item) {
-        dataHtml += `            <tr>
+        if (!item.group) {
+          item.group = "undefined";
+        }
+        dataHtml += `           <tr id="${item.id}">
                   <td>${item.fullName}</td>
                   <td>${item.email}</td>
                   <td>${item.group.name}</td>
-                  <td><a href="#" class="btn btn-outline-info"><i class="fas fa-ellipsis-h"></i></a></td>
+                  <td>
+                  <button type="button" onclick="removeUser(${item.id})" class="btn btn-danger">Delete</button>
+                  <button type="button" onclick="editUser(${item.id})"class="btn btn-info">Edit</button>
+                  </td>
               </tr>`;
       });
       container = $("#tbody");
@@ -50,11 +56,13 @@ function search() {
   var dataHtml;
   if (result.length) {
     $.each(result, function (index, item) {
-      dataHtml += `            <tr>
+      dataHtml += `            <tr id="${item.id}">
                     <td>${item.fullName}</td>
                     <td>${item.email}</td>
                     <td>${item.group.name}</td>
-                    <td><a href="#" class="btn btn-outline-info"><i class="fas fa-ellipsis-h"></i></a></td>
+                    <td>                  
+                    <button type="button" onclick="removeUser(${item.id})" class="btn btn-danger">Delete</button>
+                    <button type="button" onclick="editUser(${item.id})"class="btn btn-info">Edit</button></td>
                 </tr>`;
     });
   } else {
@@ -134,6 +142,110 @@ function newUser() {
     $("#addUser").remove();
   }
   button.toggleClass("active");
+}
+//remove an user
+function removeUser(id) {
+  if (confirm("Are you sure you want to delete this account?")) {
+    $.ajax({
+      url: `./remove/${id}`,
+      type: "DELETE",
+      success: function (result) {
+        console.log(result);
+      },
+    });
+    $(`#${id}`).hide();
+  }
+}
+//edit an user
+function editUser(id) {
+  var user;
+  $.ajax({
+    url: `./get/${id}`,
+    type: "GET",
+    success: function (result) {
+      user = result;
+      if (user) {
+        $(`#${id}`).html(`
+            <form id="editUserForm"></form>
+            <input type="hidden" id="id" name="id" value="${id}" form="editUserForm">
+            <td><div class="control-group"><input type="text" class="form-control" placeholder="Full Name" name="fullName" id="fullName" form="editUserForm" value="${
+              user.firstName
+            } ${user.lastName}" required></input></div></td>
+            <td><div class="control-group"><input type="email" class="form-control" placeholder="Email" name="email" id="email" form="editUserForm" value="${
+              user.email
+            }" required> </div></td>
+            <td><div class="control-group"><select class="form-control" placeholder="Group" name="group" id="groupSelect" form="editUserForm" data-live-search="true" required>
+            ${groupsList
+              .map((item) =>
+                item.id == user.groupId
+                  ? `<option selected value="${item.id}">${item.name}</option>`
+                  : `<option value="${item.id}">${item.name}</option>`
+              )
+              .join("")}
+                </select></div></td>
+            <td>
+            <div class="form-actions"><button class="btn btn-outline-success" type="submit" form="editUserForm">Save</a></div>
+            <button class="btn btn-outline-secondary" onclick="resetRow(${id})" >Cancel</a>
+            </td>
+    `);
+        $("#groupSelect").selectpicker({
+          style: "btn-default",
+          virtualScroll: true,
+        });
+      }
+
+      $("#editUserForm").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+          url: "/users/submit",
+          type: "post",
+          data: $("#editUserForm").serialize(),
+          error: function (data) {
+            var message = data.responseJSON;
+            //Display error
+            $("#alert")
+              .html(`<div class="alert alert-danger  alert-dismissible fade show" role="alert">
+            <strong>${message.title}!</strong> ${message.message}.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>`);
+          },
+          success: function (data) {
+            console.log({ data });
+            var user = data.data;
+            //Display success
+            $("#alert")
+              .html(`<div class="alert alert-success  alert-dismissible fade show" role="alert">
+            <strong>Success!</strong> User updated!
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>`);
+            resetRow(id);
+          },
+        });
+      });
+    },
+  });
+}
+
+//Refresh row
+function resetRow(id) {
+  var user;
+  $.ajax({
+    url: `./get/${id}`,
+    type: "GET",
+    success: function (result) {
+      user = result;
+      $(`#${id}`).html(`<td>${user.firstName} ${user.lastName}</td>
+      <td>${user.email}</td>
+      <td>${user.group.name}</td>
+      <td>                  
+      <button type="button" onclick="removeUser(${user.id})" class="btn btn-danger">Delete</button>
+      <button type="button" onclick="editUser(${user.id})"class="btn btn-info">Edit</button></td>`);
+    },
+  });
 }
 //config to parse csv files
 config = {

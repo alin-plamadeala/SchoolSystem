@@ -9,7 +9,7 @@ const Course = db.define("course", {
   },
 });
 
-Course.belongsTo(User, { as: "teacher" });
-User.hasMany(Course, { foreignKey: "teacherId" });
+Course.belongsTo(User, { as: "teacher", onDelete: "CASCADE" });
+User.hasMany(Course, { foreignKey: "teacherId", onDelete: "CASCADE" });
 
 module.exports = Course;

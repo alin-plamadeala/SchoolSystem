@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const path = require("path");
 //models
 const User = require("./models/userModel");
+const Hash = require("./models/hashModel");
 const Group = require("./models/groupModel");
 const Course = require("./models/courseModel");
 const AssignmentFile = require("./models/assignmentFiles");
@@ -17,6 +18,7 @@ const Feedback = require("./models/feedbackModel");
 const routes = require("./routes/route");
 const teacherRoutes = require("./routes/teacherRoutes");
 const studentRoutes = require("./routes/studentRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 const { Sequelize } = require("sequelize");
 global.__basedir = __dirname;
 require("dotenv").config();
@@ -28,12 +30,15 @@ const PORT = process.env.PORT || 3000;
 //database
 const db = require("./config/database");
 //sync db tables
+User.sync();
+Hash.sync();
+Group.sync();
+Course.sync();
 AssignmentFile.sync();
 Assignment.sync();
 Submission.sync();
 SubmissionFile.sync();
 Feedback.sync();
-User.sync();
 db.sync();
 //db test
 db.authenticate()
@@ -98,6 +103,7 @@ var hbs = require("express-handlebars");
 app.use(express.static("public"));
 
 app.use("/", routes);
+app.use("/", adminRoutes);
 app.use("/teacher", teacherRoutes);
 app.use("/student", studentRoutes);
 

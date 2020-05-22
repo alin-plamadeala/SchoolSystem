@@ -2,7 +2,6 @@ var express = require("express");
 var router = express.Router();
 
 const userController = require("../controllers/userController");
-const dashboardController = require("../controllers/dashboardController");
 const indexController = require("../controllers/indexController");
 const confirmationController = require("../controllers/confirmationController");
 
@@ -49,108 +48,5 @@ router
 router
   .get("/confirmEmail", confirmationController.getConfirmEmail)
   .post("/confirmEmail", confirmationController.postConfirmEmail);
-
-//List of Students
-router.get(
-  "/users/students",
-  userController.allowIfLoggedin,
-  userController.grantAccess("readAny", "profile"),
-  dashboardController.getStudents
-);
-
-//List of Teachers
-router.get(
-  "/users/teachers",
-  userController.allowIfLoggedin,
-  userController.grantAccess("readAny", "profile"),
-  dashboardController.getTeachers
-);
-
-//List of Admins
-router.get(
-  "/users/admins",
-  userController.allowIfLoggedin,
-  userController.grantAccess("readAny", "profile"),
-  dashboardController.getAdmins
-);
-//Add user
-router.post(
-  "/users/submit",
-  userController.allowIfLoggedin,
-  userController.grantAccess("createAny", "profile"),
-  dashboardController.addUser
-);
-//Add user list
-router.post(
-  "/users/submitList",
-  userController.allowIfLoggedin,
-  userController.grantAccess("createAny", "profile"),
-  dashboardController.addUserList
-);
-//List all courses
-router.get(
-  "/courses",
-  userController.allowIfLoggedin,
-  userController.grantAccess("readAny", "course"),
-  dashboardController.getCourses
-);
-//Add course
-router.post(
-  "/courses/submit",
-  userController.allowIfLoggedin,
-  userController.grantAccess("createAny", "course"),
-  dashboardController.addCourse
-);
-
-//List student groups
-router.get(
-  "/groups",
-  userController.allowIfLoggedin,
-  userController.grantAccess("readAny", "group"),
-  dashboardController.getStudentGroups
-);
-//Add group
-router.post(
-  "/groups/submit",
-  userController.allowIfLoggedin,
-  userController.grantAccess("createAny", "group"),
-  dashboardController.addGroup
-);
-
-//List teacher departments
-router.get(
-  "/departments",
-  userController.allowIfLoggedin,
-  userController.grantAccess("readAny", "group"),
-  dashboardController.getTeacherDepartments
-);
-
-//Add teacher department
-router.post(
-  "/departments/submit",
-  userController.allowIfLoggedin,
-  userController.grantAccess("createAny", "group"),
-  dashboardController.addDepartment
-);
-
-router.get(
-  "/user/:userId",
-  userController.allowIfLoggedin,
-  userController.getUser
-);
-
-router.put(
-  "/user/:userId",
-  userController.allowIfLoggedin,
-  userController.grantAccess("updateAny", "profile"),
-  userController.updateUser
-);
-
-router.delete(
-  "/user/:userId",
-  userController.allowIfLoggedin,
-  userController.grantAccess("deleteAny", "profile"),
-  userController.deleteUser
-);
 
 module.exports = router;
