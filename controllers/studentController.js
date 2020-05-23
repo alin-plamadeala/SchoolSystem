@@ -9,10 +9,15 @@ const Feedback = require("../models/feedbackModel");
 const sanitizeHtml = require("sanitize-html");
 const moment = require("moment");
 
+const { roles } = require("../roles");
+
 exports.showAssignments = async (req, res, next) => {
   const { courseId } = req.params;
   const user = res.locals.loggedInUser;
-  const course = await Course.findByPk(courseId, { attributes: ["name"] });
+  const course = await Course.findByPk(courseId, {
+    attributes: ["name"],
+    include: [{ model: Group }],
+  });
   const groupId = user.group.id;
   const assignments = await Assignment.findAll({
     where: { courseId, groupId },
@@ -27,30 +32,34 @@ exports.showAssignments = async (req, res, next) => {
       },
     ],
   });
-  //TODO sort assignments ///include: [{ model: Feedback }]
-  //---------------------------
-  //   var overdueAssignments;
-  //   var activeAssignments;
-  //   var awaitingFeedbackAssignments;
-  //   var finishedAssignments;
-  //   assignments.forEach((assignment)=>{
-  //       if
-  //   })
-  //    assignments.filter((assignment) =>
-  //     moment(assignment.deadline).isBefore(moment())
-  //   );
-  //   const inactiveAssignments = assignments.filter(
-  //     (assignments) => !assignments.active
-  //   );
-  //   res.json(assignments);
-  res.render("viewAssignmentsStudent", {
-    layout: "default",
-    template: "home-template",
-    title: "View assignments",
-    user: res.locals.loggedInUser.toJSON(),
-    course: course.toJSON(),
-    assignments: assignments.map((assignment) => assignment.toJSON()),
-  });
+  try {
+    var permission = roles.can(user.role).readAny("course");
+    if (permission.granted === false) {
+      if (course.groups.map((group) => group.id).includes(user.groupId)) {
+        permission = roles.can(user.role).readOwn("course");
+      }
+    }
+    if (permission.granted) {
+      res.render("viewAssignmentsStudent", {
+        layout: "default",
+        template: "home-template",
+        title: "View assignments",
+        user: res.locals.loggedInUser.toJSON(),
+        course: course.toJSON(),
+        assignments: assignments.map((assignment) => assignment.toJSON()),
+      });
+    } else {
+      res.render("error", {
+        layout: false,
+        template: "home-template",
+        title: "Error",
+        message: "Access Denied",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "error" });
+    console.log(error);
+  }
 };
 
 exports.showAssignment = async (req, res, next) => {
@@ -69,13 +78,29 @@ exports.showAssignment = async (req, res, next) => {
         },
       ],
     });
-    res.render("viewAssignmentStudent", {
-      layout: "default",
-      template: "home-template",
-      title: "Assignment " + assignment.title,
-      user: res.locals.loggedInUser.toJSON(),
-      assignment: assignment.toJSON(),
-    });
+
+    var permission = roles.can(user.role).readAny("assignment");
+    if (permission.granted === false) {
+      if (assignment.groupId == user.groupId) {
+        permission = roles.can(user.role).readOwn("assignment");
+      }
+    }
+    if (permission.granted) {
+      res.render("viewAssignmentStudent", {
+        layout: "default",
+        template: "home-template",
+        title: "Assignment " + assignment.title,
+        user: res.locals.loggedInUser.toJSON(),
+        assignment: assignment.toJSON(),
+      });
+    } else {
+      res.render("error", {
+        layout: false,
+        template: "home-template",
+        title: "Error",
+        message: "Access Denied",
+      });
+    }
   } catch (error) {
     console.log(error);
     res.render("viewAssignment", {
@@ -167,5 +192,29 @@ exports.getSubmissionFile = async (req, res, next) => {
   });
   const file = submission.file;
   const returnedFile = `${__basedir}/uploads/${file.name}`;
-  res.download(returnedFile, file.originalName); // Set disposition and send it.
+
+  var permission = roles
+    .can(res.locals.loggedInUser.role)
+    .readAny("submission");
+  if (permission.granted === false) {
+    if (submission.userId == res.locals.loggedInUser.id) {
+      permission = roles
+        .can(res.locals.loggedInUser.role)
+        .readOwn("submission");
+    }
+  }
+  if (permission.granted) {
+    try {
+      res.download(returnedFile, file.originalName); // Set disposition and send it.
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    res.render("error", {
+      layout: false,
+      template: "home-template",
+      title: "Error",
+      message: "Access Denied",
+    });
+  }
 };

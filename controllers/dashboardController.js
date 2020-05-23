@@ -84,7 +84,7 @@ exports.addUser = async (req, res, next) => {
     const name = fullName.split(" ");
     const firstName = name[0];
     const lastName = fullName.substring(name[0].length).trim();
-    var editedUser;
+    var editedUser = { email: "undefined" };
     if (id) {
       editedUser = await User.findByPk(id);
     }

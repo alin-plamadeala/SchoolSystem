@@ -45,23 +45,37 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-router.get("/course/:courseId", studentController.showAssignments);
+router.get(
+  "/course/:courseId",
+  userController.allowIfLoggedin,
+  studentController.showAssignments
+);
 
-router.get("/assignment/:assignmentId", studentController.showAssignment);
+router.get(
+  "/assignment/:assignmentId",
+  userController.allowIfLoggedin,
+  studentController.showAssignment
+);
 
 router.post(
   "/assignment/:assignmentId",
   upload.single("file"),
+  userController.allowIfLoggedin,
   studentController.submitAssignment
 );
 
 //get assignment file
 router.get(
   "/assignment/:assignmentId/download",
+  userController.allowIfLoggedin,
   studentController.getAssignmentFile
 );
 
 //get submission file
-router.get("/submission/:submissionId", studentController.getSubmissionFile);
+router.get(
+  "/submission/:submissionId",
+  userController.allowIfLoggedin,
+  studentController.getSubmissionFile
+);
 
 module.exports = router;
