@@ -1,4 +1,9 @@
-<h3>Your assignments for course <strong>{{course.name}}</strong></h3>
+<div class="my-4">
+    <h3>Your assignments for course <strong>{{course.name}}</strong></h3>
+    <h5 class="text-muted">Teacher:
+        <strong>{{course.teacher.firstName}} {{course.teacher.lastName}}</strong></h5>
+</div>
+
 <div id="accordion">
     <div class="card">
         <div class="card-header" id="activeList">
@@ -16,16 +21,16 @@
                     {{#each assignments}}
                     <div class="card 
         {{#ifEquals this.status "Not submitted"}}
-        bg-secondary
+        bg-notsubmitted
         {{/ifEquals}}
         {{#ifEquals this.status "Submitted"}}
-        bg-light
+        bg-submitted
         {{/ifEquals}}
         {{#ifEquals this.status "Feedback Available"}}
-        bg-success
+        bg-feedback
         {{/ifEquals}}
         {{#ifEquals this.status "Overdue"}}
-        bg-warning
+        bg-overdue
         {{/ifEquals}}
                       m-3" style="width: 15rem;">
                         <div class="card-header text-center"><b>{{this.title}}</b></div>
@@ -36,7 +41,7 @@
                                 {{this.status}}
                             </p>
                             <div class="text-center">
-                                <a href="/student/assignment/{{this.id}}" class="btn btn-secondary m-1">View
+                                <a href="/student/assignment/{{this.id}}" class="btn btn-outline-dark m-1">View
                                     Assignment</a>
                             </div>
 

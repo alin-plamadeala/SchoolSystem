@@ -17,7 +17,7 @@ exports.showAssignments = async (req, res, next) => {
   const user = res.locals.loggedInUser;
   const course = await Course.findByPk(courseId, {
     attributes: ["name"],
-    include: [{ model: Group }],
+    include: [{ model: Group }, { model: User, as: "teacher" }],
   });
   const groupId = user.group.id;
   var assignments = await Assignment.findAll({

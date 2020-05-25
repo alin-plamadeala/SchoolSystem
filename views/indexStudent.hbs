@@ -2,11 +2,10 @@
     <div class="col-8 ">
         <h3 class="my-2 py-2">Last Announcements:</h3>
         {{#each announcements}}
-        <div><u>{{this.author.firstName}} {{this.author.lastName}}</u> in {{#each this.groups}}{{this.name}}{{/each}}
-        </div>
-        <div><small>{{formatDate this.createdAt}}</small></div>
-        <h5><b>{{this.title}}</b></h5>
-        <p class="font-weight-light">{{this.description}}</p>
+        <h5 class="mb-0"><b>{{this.title}}</b></h5>
+        <div class="mt-0 text-secondary"><small><u>{{this.author.firstName}} {{this.author.lastName}}</u> at
+                {{formatDate this.createdAt}}</small></div>
+        <p class="mt-2 font-weight-light">{{{breaklines this.description}}}</p>
         <hr>
         {{/each}}
     </div>
@@ -29,8 +28,9 @@
         assignment-overdue
         {{/ifEquals}}
             ">
-                <h5 class="text-center"><b>{{this.title}}</b></h5>
-                <div><strong>Course:</strong> {{this.course.name}}</div>
+                <h5 class="text-center"><b>{{this.title}}</b><br>
+                    <small class="text-muted">{{this.course.name}}</small></h5>
+                <div><strong>Teacher:</strong> {{this.course.teacher.firstName}} {{this.course.teacher.lastName}}</div>
                 <div><strong>Deadline:</strong> {{formatDate this.deadline}}</div>
                 <div><strong>Status:</strong> {{this.status}}</div>
             </div>

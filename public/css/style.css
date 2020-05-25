@@ -39,11 +39,10 @@ a:focus {
   border-color: #ced4da;
 }
 .description {
-  margin: 1rem; 
+  margin: 1rem;
 }
 
-
-.attachment {  
+.attachment {
   display: flex;
   flex-wrap: wrap;
   align-items: space-between;
@@ -63,29 +62,39 @@ a:focus {
   font-size: 2em;
   margin: 10px;
   padding: 10px;
-
 }
-.filename{
+.filename {
   display: block;
   max-width: 30vw;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   align-self: center;
-
 }
 .remove {
-  margin-left: auto; 
+  margin-left: auto;
   padding-right: 5px;
   align-self: flex-start;
   cursor: pointer;
 }
-}
+
 /* ---------------------------------------------------
     Assignment CARD STYLE
 ----------------------------------------------------- */
-.bg-secondary {
-  background-color: #cbd2d8;
+.bg-notsubmitted {
+  background-color: #4db6ac;
+}
+.bg-submitted {
+  background-color: #e0e0e0;
+}
+.bg-overdue {
+  background-color: #fff176;
+}
+.bg-feedback {
+  background-color: #81c784;
+}
+.bg-feedbackfail {
+  background-color: #ff8a65;
 }
 
 .assignmentCard p {
@@ -95,7 +104,8 @@ a:focus {
   width: 90%;
 }
 
-.assignment{
+.assignment {
+  font-size: 0.8rem;
   margin-top: 1em;
   margin-bottom: 1em;
   padding: 0.5em;
@@ -108,21 +118,25 @@ a:focus {
 .assignment:active {
   box-shadow: inset 0 0 100px 100px rgba(0, 0, 0, 0.2);
 }
-.assignment-unsubmitted{
+.assignment-unsubmitted {
   border-color: rgba(0, 0, 0, 0.125);
-  background-color: #6c757d;
+  background-color: #4db6ac;
 }
-.assignment-submitted{
+.assignment-submitted {
   border-color: rgba(0, 0, 0, 0.125);
-  background-color: #ffffff;
+  background-color: #e0e0e0;
 }
-.assignment-feedback{
+.assignment-feedback {
   border-color: rgba(0, 0, 0, 0.125);
-  background-color: #28a745;
+  background-color: #81c784;
 }
-.assignment-overdue{
+.assignment-overdue {
   border-color: rgba(0, 0, 0, 0.125);
-  background-color: #ffc107;
+  background-color: #fff176;
+}
+.assignment-feedbackfail {
+  border-color: rgba(0, 0, 0, 0.125);
+  background-color: #ff8a65;
 }
 /* ---------------------------------------------------
     SIDEBAR STYLE

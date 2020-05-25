@@ -29,7 +29,7 @@ exports.index = async (req, res, next) => {
           required: false,
           include: [{ model: Feedback }],
         },
-        { model: Course },
+        { model: Course, include: [{ model: User, as: "teacher" }] },
       ],
     });
     assignments = assignments.map((assignment) => {
