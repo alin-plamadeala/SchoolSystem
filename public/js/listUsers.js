@@ -174,7 +174,7 @@ function editUser(id) {
             <td><div class="control-group"><input type="email" class="form-control" placeholder="Email" name="email" id="email" form="editUserForm-${id}" value="${
           user.email
         }" required> </div></td>
-            <td><div class="control-group"><select class="form-control" placeholder="Group" name="group" id="groupSelect" form="editUserForm-${id}" data-live-search="true" required>
+            <td><div class="control-group"><select class="form-control groupSelect" placeholder="Group" name="group" id="groupSelect" form="editUserForm-${id}" data-live-search="true" required>
             ${groupsList
               .map((item) =>
                 item.id == user.groupId
@@ -184,11 +184,11 @@ function editUser(id) {
               .join("")}
                 </select></div></td>
             <td>
-            <div class="form-actions"><button class="btn btn-outline-success" type="submit" form="editUserForm-${id}">Save</a></div>
-            <button class="btn btn-outline-secondary" onclick="resetRow(${id})" >Cancel</a>
+            <div class="form-actions"><button class="btn btn-outline-success" type="submit" form="editUserForm-${id}">Save</a>
+            <button class="m-1 btn btn-outline-secondary" onclick="resetRow(${id})" >Cancel</a></div>
             </td>
     `);
-        $("#groupSelect").selectpicker({
+        $(".groupSelect").selectpicker({
           style: "btn-default",
           virtualScroll: true,
         });

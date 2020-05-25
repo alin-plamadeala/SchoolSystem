@@ -197,7 +197,7 @@ function editGroup(id) {
             <td><div class="control-group"><input value="${
               group.name
             }" type="text" class="form-control" placeholder="Group Name" name="name" id="name" form="editGroupForm-${id}" required></input></div></td>
-        <td><div class="control-group"><select class="form-control" placeholder="Courses" name="courses" id="courseSelect" form="editGroupForm-${id}" data-live-search="true"   required multiple >
+        <td><div class="control-group"><select class="courseSelect form-control" placeholder="Courses" name="courses" id="courseSelect" form="editGroupForm-${id}" data-live-search="true"   required multiple >
         ${courseList
           .map((item) =>
             group.courses.map((course) => course.id).includes(item.id)
@@ -207,12 +207,12 @@ function editGroup(id) {
           .join("")}
             </select></div></td>
         <td>
-        <div class="form-actions"><button class="btn btn-outline-success" type="submit" form="editGroupForm-${id}">Save</a></div>
-        <button class="btn btn-outline-secondary" onclick="resetRow(${id})" >Cancel</a>
+        <div class="form-actions"><button class="btn btn-outline-success" type="submit" form="editGroupForm-${id}">Save</a>
+        <button class="m-1 btn btn-outline-secondary" onclick="resetRow(${id})" >Cancel</a></div>
         </td>
         
     `);
-        $("#courseSelect").selectpicker({
+        $(".courseSelect").selectpicker({
           style: "btn-default",
           virtualScroll: true,
         });

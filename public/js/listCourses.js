@@ -178,7 +178,7 @@ function editCourse(id) {
             <td><div class="control-group"><input value="${
               course.name
             }" type="text" class="form-control" placeholder="Course Name" name="name" id="name" form="editCourseForm-${id}" required></input></div></td>
-            <td><div class="control-group"><select class="form-control" placeholder="Teacher" name="teacherId" id="teacherId" form="editCourseForm-${id}" data-live-search="true" required>
+            <td><div class="control-group"><select class="teacherId form-control" placeholder="Teacher" name="teacherId" id="teacherId" form="editCourseForm-${id}" data-live-search="true" required>
             ${teachersList
               .map((item) =>
                 item.id == course.teacher.id
@@ -188,12 +188,12 @@ function editCourse(id) {
               .join("")}
                 </select></div></td>
             <td>
-            <div class="form-actions"><button class="btn btn-outline-success" type="submit" form="editCourseForm-${id}">Save</a></div>
-            <button class="btn btn-outline-secondary" onclick="resetRow(${id})" >Cancel</a>
+            <div class="form-actions"><button class="btn btn-outline-success" type="submit" form="editCourseForm-${id}">Save</a>
+            <button class="m-1 btn btn-outline-secondary" onclick="resetRow(${id})" >Cancel</a></div>
             </td>
     
     `);
-        $("#teacherId").selectpicker({
+        $(".teacherId").selectpicker({
           style: "btn-default",
           virtualScroll: true,
         });
