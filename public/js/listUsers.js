@@ -166,15 +166,15 @@ function editUser(id) {
       user = result;
       if (user) {
         $(`#${id}`).html(`
-            <form id="editUserForm"></form>
-            <input type="hidden" id="id" name="id" value="${id}" form="editUserForm">
-            <td><div class="control-group"><input type="text" class="form-control" placeholder="Full Name" name="fullName" id="fullName" form="editUserForm" value="${
-              user.firstName
-            } ${user.lastName}" required></input></div></td>
-            <td><div class="control-group"><input type="email" class="form-control" placeholder="Email" name="email" id="email" form="editUserForm" value="${
-              user.email
-            }" required> </div></td>
-            <td><div class="control-group"><select class="form-control" placeholder="Group" name="group" id="groupSelect" form="editUserForm" data-live-search="true" required>
+            <form id="editUserForm-${id}"></form>
+            <input type="hidden" id="id" name="id" value="${id}" form="editUserForm-${id}">
+            <td><div class="control-group"><input type="text" class="form-control" placeholder="Full Name" name="fullName" id="fullName" form="editUserForm-${id}" value="${
+          user.firstName
+        } ${user.lastName}" required></input></div></td>
+            <td><div class="control-group"><input type="email" class="form-control" placeholder="Email" name="email" id="email" form="editUserForm-${id}" value="${
+          user.email
+        }" required> </div></td>
+            <td><div class="control-group"><select class="form-control" placeholder="Group" name="group" id="groupSelect" form="editUserForm-${id}" data-live-search="true" required>
             ${groupsList
               .map((item) =>
                 item.id == user.groupId
@@ -184,7 +184,7 @@ function editUser(id) {
               .join("")}
                 </select></div></td>
             <td>
-            <div class="form-actions"><button class="btn btn-outline-success" type="submit" form="editUserForm">Save</a></div>
+            <div class="form-actions"><button class="btn btn-outline-success" type="submit" form="editUserForm-${id}">Save</a></div>
             <button class="btn btn-outline-secondary" onclick="resetRow(${id})" >Cancel</a>
             </td>
     `);
@@ -194,12 +194,12 @@ function editUser(id) {
         });
       }
 
-      $("#editUserForm").submit(function (e) {
+      $(`editUserForm-${id}`).submit(function (e) {
         e.preventDefault();
         $.ajax({
           url: "/users/submit",
           type: "post",
-          data: $("#editUserForm").serialize(),
+          data: $(`editUserForm-${id}`).serialize(),
           error: function (data) {
             var message = data.responseJSON;
             //Display error

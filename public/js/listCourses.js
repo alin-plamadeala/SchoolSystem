@@ -187,7 +187,10 @@ function editCourse(id) {
               )
               .join("")}
                 </select></div></td>
-            <td><div class="form-actions"><button class="btn btn-outline-success" type="submit" name="group" id="group" form="editCourseForm-${id}"><i class="fa fa-plus" aria-hidden="true"></i></a></div></td>
+            <td>
+            <div class="form-actions"><button class="btn btn-outline-success" type="submit" form="editCourseForm-${id}">Save</a></div>
+            <button class="btn btn-outline-secondary" onclick="resetRow(${id})" >Cancel</a>
+            </td>
     
     `);
         $("#teacherId").selectpicker({

@@ -192,12 +192,12 @@ function editGroup(id) {
       group = result;
       if (group) {
         $(`#${id}`).html(`
-            <form id="editGroupForm"></form>
-            <input type="hidden" id="id" name="id" value="${id}" form="editGroupForm">
+            <form id="editGroupForm-${id}"></form>
+            <input type="hidden" id="id" name="id" value="${id}" form="editGroupForm-${id}">
             <td><div class="control-group"><input value="${
               group.name
-            }" type="text" class="form-control" placeholder="Group Name" name="name" id="name" form="editGroupForm" required></input></div></td>
-        <td><div class="control-group"><select class="form-control" placeholder="Courses" name="courses" id="courseSelect" form="editGroupForm" data-live-search="true"   required multiple >
+            }" type="text" class="form-control" placeholder="Group Name" name="name" id="name" form="editGroupForm-${id}" required></input></div></td>
+        <td><div class="control-group"><select class="form-control" placeholder="Courses" name="courses" id="courseSelect" form="editGroupForm-${id}" data-live-search="true"   required multiple >
         ${courseList
           .map((item) =>
             group.courses.map((course) => course.id).includes(item.id)
@@ -206,8 +206,11 @@ function editGroup(id) {
           )
           .join("")}
             </select></div></td>
-        <td><div class="form-actions"><button class="btn btn-outline-success" type="submit" name="group" id="group" form="editGroupForm"><i class="fa fa-plus" aria-hidden="true"></i></a></div></td>
-    
+        <td>
+        <div class="form-actions"><button class="btn btn-outline-success" type="submit" form="editGroupForm-${id}">Save</a></div>
+        <button class="btn btn-outline-secondary" onclick="resetRow(${id})" >Cancel</a>
+        </td>
+        
     `);
         $("#courseSelect").selectpicker({
           style: "btn-default",
@@ -215,12 +218,12 @@ function editGroup(id) {
         });
       }
 
-      $("#editGroupForm").submit(function (e) {
+      $(`editGroupForm-${id}`).submit(function (e) {
         e.preventDefault();
         $.ajax({
           url: "/groups/submit",
           type: "post",
-          data: $("#editGroupForm").serialize(),
+          data: $(`editGroupForm-${id}`).serialize(),
           error: function (data) {
             var message = data.responseJSON;
             //Display error
