@@ -10,7 +10,8 @@ exports.roles = (function () {
     .createOwn("submission")
     .readOwn("submission")
     .updateOwn("submission")
-    .readOwn("feedback");
+    .readOwn("feedback")
+    .readAny("announcement");
 
   ac.grant("teacher")
     .extend("student")
@@ -23,7 +24,10 @@ exports.roles = (function () {
     .readAny("submission")
     .createOwn("feedback")
     .readAny("feedback")
-    .updateOwn("feedback");
+    .updateOwn("feedback")
+    .createAny("announcement")
+    .updateOwn("announcement")
+    .deleteOwn("announcement");
 
   ac.grant("admin")
     .extend("student")
@@ -37,7 +41,9 @@ exports.roles = (function () {
     .readAny("group")
     .createAny("group")
     .updateAny("group")
-    .deleteAny("group");
+    .deleteAny("group")
+    .updateAny("announcement")
+    .deleteAny("announcement");
 
   return ac;
 })();

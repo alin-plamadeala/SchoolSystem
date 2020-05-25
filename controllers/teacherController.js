@@ -6,9 +6,12 @@ const AssignmentFile = require("../models/assignmentFiles");
 const Submission = require("../models/submissionModel");
 const SubmissionFile = require("../models/submissionFiles");
 const Feedback = require("../models/feedbackModel");
+const Announcement = require("../models/announcementModel");
 const moment = require("moment");
 
 const sanitizeHtml = require("sanitize-html");
+
+const { roles } = require("../roles");
 
 exports.createAssignment = async (req, res, next) => {
   res.render("createAssignment", {
@@ -303,4 +306,127 @@ exports.getSubmissionFile = async (req, res, next) => {
   const file = submission.file;
   const returnedFile = `${__basedir}/uploads/${file.name}`;
   res.download(returnedFile, file.originalName);
+};
+
+exports.createAnnouncement = async (req, res, next) => {
+  const user = res.locals.loggedInUser;
+  const departments = await Group.findAll({ where: { role: "teacher" } });
+  var permission = roles.can(user.role).createAny("announcement");
+  if (permission.granted) {
+    return res.render("createAnnouncement", {
+      layout: "default",
+      title: "Create Announcement",
+      user: res.locals.loggedInUser.toJSON(),
+      departments: departments.map((department) => department.toJSON()),
+    });
+  } else {
+    return res.status(401).render("error", {
+      layout: false,
+      title: "Error",
+      message: "You don't have enough permission to perform this action",
+    });
+  }
+};
+
+exports.editAnnouncement = async (req, res, next) => {
+  const { announcementId } = req.params;
+  const user = res.locals.loggedInUser;
+  const departments = await Group.findAll({ where: { role: "teacher" } });
+  const announcement = await Announcement.findByPk(announcementId, {
+    include: [{ model: User, as: "author" }, { model: Group }],
+  });
+  var permission = roles.can(user.role).updateAny("announcement");
+  if (permission.granted === false) {
+    if (announcement.authorId == user.id) {
+      permission = roles.can(user.role).updateOwn("announcement");
+    }
+  }
+  if (permission.granted) {
+    return res.render("createAnnouncement", {
+      layout: "default",
+      title: "Edit Announcement",
+      announcement: announcement.toJSON(),
+      user: res.locals.loggedInUser.toJSON(),
+      departments: departments.map((department) => department.toJSON()),
+    });
+  } else {
+    return res.status(401).render("error", {
+      layout: false,
+      title: "Error",
+      message: "You don't have enough permission to perform this action",
+    });
+  }
+};
+
+exports.saveAnnouncement = async (req, res, next) => {
+  const user = res.locals.loggedInUser;
+  var { announcementId, title, description, groups } = req.body;
+  var descriptionClean = sanitizeHtml(description);
+  if (!Array.isArray(groups)) {
+    groups = [groups];
+  }
+  var groupsList = groups.filter(
+    (value, index, self) => self.indexOf(value) === index
+  );
+  try {
+    if (announcementId) {
+      var announcement = await Announcement.update(
+        {
+          title,
+          description: descriptionClean,
+        },
+        { where: { id: announcementId }, returning: true }
+      );
+      await announcement[1][0].setGroups(null);
+      await announcement[1][0].setGroups(groupsList);
+    } else {
+      var announcement = await Announcement.create({
+        title,
+        description: descriptionClean,
+        authorId: user.id,
+      });
+      await announcement.setGroups(groupsList);
+    }
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+
+  return res.redirect("/teacher/announcements");
+};
+
+exports.removeAnnouncement = async (req, res, next) => {
+  const { announcementId } = req.params;
+  const user = res.locals.loggedInUser;
+  const announcement = await Announcement.findByPk(announcementId);
+  var permission = roles.can(user.role).deleteAny("announcement");
+  if (permission.granted === false) {
+    if (announcement.authorId == user.id) {
+      permission = roles.can(user.role).deleteOwn("announcement");
+    }
+  }
+  if (permission.granted) {
+    try {
+      await announcement.destroy();
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+};
+
+exports.viewAnnouncements = async (req, res, next) => {
+  const user = res.locals.loggedInUser;
+  const announcements = await Announcement.findAll({
+    where: { authorId: user.id },
+    include: [{ model: User, as: "author" }, { model: Group }],
+    order: [["updatedAt", "DESC"]],
+  });
+
+  return res.render("viewAnnouncements", {
+    layout: "default",
+    user: res.locals.loggedInUser.toJSON(),
+    title: "Announcements",
+    announcements: announcements.map((announcement) => announcement.toJSON()),
+  });
 };

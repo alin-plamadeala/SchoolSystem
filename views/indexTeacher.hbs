@@ -1,0 +1,17 @@
+<div class="row">
+    <div class="col-8 ">
+        <h3 class="my-2 py-2">Last Announcements:</h3>
+        {{#each announcements}}
+        <div><u>{{this.author.firstName}} {{this.author.lastName}}</u> in {{#each this.groups}}{{this.name}}{{/each}}
+        </div>
+        <div><small>{{formatDate this.createdAt}}</small></div>
+        <h5><b>{{this.title}}</b></h5>
+        <p class="font-weight-light">{{{breaklines this.description}}}</p>
+        <hr>
+        {{/each}}
+    </div>
+    <div class="col-4">
+        <h3 class="my-2 py-2">Materials:</h3>
+
+    </div>
+</div>

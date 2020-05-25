@@ -110,4 +110,38 @@ router.get(
   teacherController.getSubmissionFile
 );
 
+router.get(
+  "/announcements/create",
+  userController.allowIfLoggedin,
+  teacherController.createAnnouncement
+);
+router.post(
+  "/announcements/create",
+  userController.allowIfLoggedin,
+  teacherController.saveAnnouncement
+);
+
+router.get(
+  "/announcements/edit/:announcementId",
+  userController.allowIfLoggedin,
+  teacherController.editAnnouncement
+);
+router.post(
+  "/announcements/edit/:announcementId",
+  userController.allowIfLoggedin,
+  teacherController.saveAnnouncement
+);
+
+router.delete(
+  "/announcements/delete/:announcementId",
+  userController.allowIfLoggedin,
+  teacherController.removeAnnouncement
+);
+
+router.get(
+  "/announcements",
+  userController.allowIfLoggedin,
+  teacherController.viewAnnouncements
+);
+
 module.exports = router;

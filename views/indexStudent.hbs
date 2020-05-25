@@ -1,0 +1,40 @@
+<div class="row">
+    <div class="col-8 ">
+        <h3 class="my-2 py-2">Last Announcements:</h3>
+        {{#each announcements}}
+        <div><u>{{this.author.firstName}} {{this.author.lastName}}</u> in {{#each this.groups}}{{this.name}}{{/each}}
+        </div>
+        <div><small>{{formatDate this.createdAt}}</small></div>
+        <h5><b>{{this.title}}</b></h5>
+        <p class="font-weight-light">{{this.description}}</p>
+        <hr>
+        {{/each}}
+    </div>
+    <div class="col-4">
+        <h3 class="my-2 py-2">Upcoming Assignments:</h3>
+
+        {{#each assignments}}
+        <a href="/student/assignment/{{this.id}}">
+            <div class="assignment 
+        {{#ifEquals this.status "Not submitted"}}
+        assignment-unsubmitted
+        {{/ifEquals}}
+        {{#ifEquals this.status "Submitted"}}
+        assignment-submitted
+        {{/ifEquals}}
+        {{#ifEquals this.status "Feedback Available"}}
+        assignment-feedback
+        {{/ifEquals}}
+        {{#ifEquals this.status "Overdue"}}
+        assignment-overdue
+        {{/ifEquals}}
+            ">
+                <h5 class="text-center"><b>{{this.title}}</b></h5>
+                <div><strong>Course:</strong> {{this.course.name}}</div>
+                <div><strong>Deadline:</strong> {{formatDate this.deadline}}</div>
+                <div><strong>Status:</strong> {{this.status}}</div>
+            </div>
+        </a>
+        {{/each}}
+    </div>
+</div>

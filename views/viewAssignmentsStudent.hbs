@@ -14,15 +14,29 @@
                 {{#if assignments}}
                 <div class="row justify-content-md-center">
                     {{#each assignments}}
-                    <div class="card bg-light m-3" style="width: 15rem;">
-                        <div class="card-header text-center">{{this.title}}</div>
+                    <div class="card 
+        {{#ifEquals this.status "Not submitted"}}
+        bg-light
+        {{/ifEquals}}
+        {{#ifEquals this.status "Submitted"}}
+        bg-secondary
+        {{/ifEquals}}
+        {{#ifEquals this.status "Feedback Available"}}
+        bg-success
+        {{/ifEquals}}
+        {{#ifEquals this.status "Overdue"}}
+        bg-warning
+        {{/ifEquals}}
+                      m-3" style="width: 15rem;">
+                        <div class="card-header text-center"><b>{{this.title}}</b></div>
                         <div class="card-body assignmentCard">
                             <p><strong>Published:</strong> {{formatDate this.createdAt}}</p>
                             <p><strong>Deadline:</strong> {{formatDate this.deadline}}</p>
-                            <p><strong>Status:</strong> {{#if this.submissions}}Submitted{{else}}Not submitted{{/if}}
+                            <p><strong>Status:</strong>
+                                {{this.status}}
                             </p>
                             <div class="text-center">
-                                <a href="/student/assignment/{{this.id}}" class="btn btn-outline-secondary m-1">View
+                                <a href="/student/assignment/{{this.id}}" class="btn btn-secondary m-1">View
                                     Assignment</a>
                             </div>
 

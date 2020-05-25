@@ -14,6 +14,7 @@ const Assignment = require("./models/assignmentModel");
 const Submission = require("./models/submissionModel");
 const SubmissionFile = require("./models/submissionFiles");
 const Feedback = require("./models/feedbackModel");
+const Announcement = require("./models/announcementModel");
 
 const routes = require("./routes/route");
 const teacherRoutes = require("./routes/teacherRoutes");
@@ -39,6 +40,7 @@ Assignment.sync();
 Submission.sync();
 SubmissionFile.sync();
 Feedback.sync();
+Announcement.sync();
 db.sync();
 //db test
 db.authenticate()

@@ -78,4 +78,10 @@ router.get(
   studentController.getSubmissionFile
 );
 
+router.get(
+  "/announcements",
+  userController.allowIfLoggedin,
+  studentController.viewAnnouncements
+);
+
 module.exports = router;

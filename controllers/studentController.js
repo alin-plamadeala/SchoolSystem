@@ -6,6 +6,7 @@ const AssignmentFile = require("../models/assignmentFiles");
 const Submission = require("../models/submissionModel");
 const SubmissionFile = require("../models/submissionFiles");
 const Feedback = require("../models/feedbackModel");
+const Announcement = require("../models/announcementModel");
 const sanitizeHtml = require("sanitize-html");
 const moment = require("moment");
 
@@ -19,7 +20,7 @@ exports.showAssignments = async (req, res, next) => {
     include: [{ model: Group }],
   });
   const groupId = user.group.id;
-  const assignments = await Assignment.findAll({
+  var assignments = await Assignment.findAll({
     where: { courseId, groupId },
     order: [["deadline", "ASC"]],
     include: [
@@ -31,6 +32,24 @@ exports.showAssignments = async (req, res, next) => {
         include: [{ model: Feedback }],
       },
     ],
+  });
+  assignments = assignments.map((assignment) => {
+    assignment = assignment.toJSON();
+    console.log(assignment);
+    if (assignment.submissions.length) {
+      if (assignment.submissions[0].feedback) {
+        assignment.status = "Feedback Available";
+      } else {
+        assignment.status = "Submitted";
+      }
+    } else {
+      if (assignment.deadline < Date.now()) {
+        assignment.status = "Overdue";
+      } else {
+        assignment.status = "Not submitted";
+      }
+    }
+    return assignment;
   });
   try {
     var permission = roles.can(user.role).readAny("course");
@@ -46,14 +65,13 @@ exports.showAssignments = async (req, res, next) => {
         title: "View assignments",
         user: res.locals.loggedInUser.toJSON(),
         course: course.toJSON(),
-        assignments: assignments.map((assignment) => assignment.toJSON()),
+        assignments: assignments,
       });
     } else {
-      res.render("error", {
+      return res.status(401).render("error", {
         layout: false,
-        template: "home-template",
         title: "Error",
-        message: "Access Denied",
+        message: "You don't have enough permission to perform this action",
       });
     }
   } catch (error) {
@@ -217,4 +235,24 @@ exports.getSubmissionFile = async (req, res, next) => {
       message: "Access Denied",
     });
   }
+};
+
+exports.viewAnnouncements = async (req, res, next) => {
+  const user = res.locals.loggedInUser;
+
+  const announcements = await Announcement.findAll({
+    include: [
+      { model: Group, where: { id: user.group.id } },
+      { model: User, as: "author" },
+    ],
+    order: [["createdAt", "DESC"]],
+  });
+
+  res.render("viewAnnouncementsStudent", {
+    layout: "default",
+    template: "home-template",
+    user: res.locals.loggedInUser.toJSON(),
+    title: "Announcements",
+    announcements: announcements.map((announcement) => announcement.toJSON()),
+  });
 };
