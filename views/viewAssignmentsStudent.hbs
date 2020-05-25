@@ -16,10 +16,10 @@
                     {{#each assignments}}
                     <div class="card 
         {{#ifEquals this.status "Not submitted"}}
-        bg-light
+        bg-secondary
         {{/ifEquals}}
         {{#ifEquals this.status "Submitted"}}
-        bg-secondary
+        bg-light
         {{/ifEquals}}
         {{#ifEquals this.status "Feedback Available"}}
         bg-success
@@ -54,7 +54,7 @@
             <h5 class="mb-0">
                 <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseInactive"
                     aria-expanded="false" aria-controls="collapseInactive">
-                    Inctive Assignments
+                    Inactive Assignments
                 </button>
             </h5>
         </div>

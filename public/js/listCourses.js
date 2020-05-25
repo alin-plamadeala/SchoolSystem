@@ -173,12 +173,12 @@ function editCourse(id) {
       course = result;
       if (course) {
         $(`#${id}`).html(`
-            <form id="editCourseForm"></form>
-            <input type="hidden" id="id" name="id" value="${id}" form="editCourseForm">
+            <form id="editCourseForm-${id}"></form>
+            <input type="hidden" id="id" name="id" value="${id}" form="editCourseForm-${id}">
             <td><div class="control-group"><input value="${
               course.name
-            }" type="text" class="form-control" placeholder="Course Name" name="name" id="name" form="editCourseForm" required></input></div></td>
-            <td><div class="control-group"><select class="form-control" placeholder="Teacher" name="teacherId" id="teacherId" form="editCourseForm" data-live-search="true" required>
+            }" type="text" class="form-control" placeholder="Course Name" name="name" id="name" form="editCourseForm-${id}" required></input></div></td>
+            <td><div class="control-group"><select class="form-control" placeholder="Teacher" name="teacherId" id="teacherId" form="editCourseForm-${id}" data-live-search="true" required>
             ${teachersList
               .map((item) =>
                 item.id == course.teacher.id
@@ -187,7 +187,7 @@ function editCourse(id) {
               )
               .join("")}
                 </select></div></td>
-            <td><div class="form-actions"><button class="btn btn-outline-success" type="submit" name="group" id="group" form="editCourseForm"><i class="fa fa-plus" aria-hidden="true"></i></a></div></td>
+            <td><div class="form-actions"><button class="btn btn-outline-success" type="submit" name="group" id="group" form="editCourseForm-${id}"><i class="fa fa-plus" aria-hidden="true"></i></a></div></td>
     
     `);
         $("#teacherId").selectpicker({
@@ -196,12 +196,12 @@ function editCourse(id) {
         });
       }
 
-      $("#editCourseForm").submit(function (e) {
+      $(`#editCourseForm-${id}`).submit(function (e) {
         e.preventDefault();
         $.ajax({
           url: "/courses/submit",
           type: "post",
-          data: $("#editCourseForm").serialize(),
+          data: $(`#editCourseForm-${id}`).serialize(),
           error: function (data) {
             var message = data.responseJSON;
             //Display error

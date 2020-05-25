@@ -84,7 +84,8 @@ a:focus {
 /* ---------------------------------------------------
     Assignment CARD STYLE
 ----------------------------------------------------- */
-.assignmentCard {
+.bg-secondary {
+  background-color: #cbd2d8;
 }
 
 .assignmentCard p {
