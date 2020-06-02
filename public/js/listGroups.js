@@ -218,12 +218,13 @@ function editGroup(id) {
         });
       }
 
-      $(`editGroupForm-${id}`).submit(function (e) {
+      $(`#editGroupForm-${id}`).submit(function (e) {
+        console.log("submit");
         e.preventDefault();
         $.ajax({
           url: "/groups/submit",
           type: "post",
-          data: $(`editGroupForm-${id}`).serialize(),
+          data: $(`#editGroupForm-${id}`).serialize(),
           error: function (data) {
             var message = data.responseJSON;
             //Display error

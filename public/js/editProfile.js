@@ -9,6 +9,8 @@ $(document).ready(function () {
     }
   });
 });
+
+// Validate input in edit profile form
 function validateForm() {
   console.log("validation");
   email = $("#email");

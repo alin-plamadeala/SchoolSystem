@@ -3,6 +3,20 @@
 var data = courseList;
 
 console.log(data);
+
+//html to display an course
+function renderItem(item) {
+  html = `<tr id="${item.id}">
+        <td>${item.name}</td>
+        <td>${item.teacher.firstName} ${item.teacher.lastName}</td>
+        <td>
+        <button type="button" onclick="removeCourse(${item.id})" class="btn btn-danger">Delete</button>
+        <button type="button" onclick="editCourse(${item.id})"class="btn btn-info">Edit</button>
+        </td>
+    </tr>`;
+  return html;
+}
+
 //pagination of list of courses
 function displayPaginatedContent() {
   $("#pagination").pagination({
@@ -17,14 +31,7 @@ function displayPaginatedContent() {
         .addClass("page-link");
       var dataHtml;
       $.each(data, function (index, item) {
-        dataHtml += `            <tr id="${item.id}">
-                  <td>${item.name}</td>
-                  <td>${item.teacher.firstName} ${item.teacher.lastName}</td>
-                  <td>
-                  <button type="button" onclick="removeCourse(${item.id})" class="btn btn-danger">Delete</button>
-                  <button type="button" onclick="editCourse(${item.id})"class="btn btn-info">Edit</button>
-                  </td>
-              </tr>`;
+        dataHtml += renderItem(item);
       });
       container = $("#tbody");
       container.html(dataHtml);
@@ -58,14 +65,7 @@ function search() {
   var dataHtml;
   if (result.length) {
     $.each(result, function (index, item) {
-      dataHtml += `            <tr id="${item.id}">
-                    <td>${item.name}</td>
-                    <td>${item.teacher.firstName} ${item.teacher.lastName}</td>
-                    <td>
-                    <button type="button" onclick="removeCourse(${item.id})" class="btn btn-danger">Delete</button>
-                    <button type="button" onclick="editCourse(${item.id})"class="btn btn-info">Edit</button>
-                    </td>
-                </tr>`;
+      dataHtml += renderItem(item);
     });
   } else {
     dataHtml = `<p>No courses found</p>`;
@@ -87,6 +87,7 @@ function removeFilters() {
 }
 //Display form to add a course
 function newCourse() {
+  //Add course form html
   const form = `
 <tr id="addCourse">
     <form  id="addCourseForm"></form>

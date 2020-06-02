@@ -377,6 +377,7 @@ exports.getStudentGroups = async (req, res, next) => {
 exports.addGroup = async (req, res, next) => {
   try {
     const { id, name, role, courses } = req.body;
+    console.log(id);
     if (!name) {
       res.status(400).json({
         title: "Error",
