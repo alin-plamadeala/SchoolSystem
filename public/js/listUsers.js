@@ -194,12 +194,12 @@ function editUser(id) {
         });
       }
 
-      $(`editUserForm-${id}`).submit(function (e) {
+      $(`#editUserForm-${id}`).submit(function (e) {
         e.preventDefault();
         $.ajax({
           url: "/users/submit",
           type: "post",
-          data: $(`editUserForm-${id}`).serialize(),
+          data: $(`#editUserForm-${id}`).serialize(),
           error: function (data) {
             var message = data.responseJSON;
             //Display error
