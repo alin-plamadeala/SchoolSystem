@@ -15,6 +15,7 @@ const Submission = require("./models/submissionModel");
 const SubmissionFile = require("./models/submissionFiles");
 const Feedback = require("./models/feedbackModel");
 const Announcement = require("./models/announcementModel");
+const createAdmin = require("./config/createAdminAccount");
 
 const routes = require("./routes/route");
 const teacherRoutes = require("./routes/teacherRoutes");
@@ -42,6 +43,8 @@ SubmissionFile.sync();
 Feedback.sync();
 Announcement.sync();
 db.sync();
+//create admin account
+createAdmin.adminAccount();
 //db test
 db.authenticate()
   .then(() => console.log("Database connected..."))

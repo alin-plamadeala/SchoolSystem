@@ -7,7 +7,7 @@ module.exports = new Sequelize(
   process.env.DB_PASS,
   {
     host: process.env.DB_HOST,
-    dialect: "postgres",
+    dialect: process.env.DB_DIALECT,
     logging: false,
   }
 );
