@@ -19,7 +19,7 @@ exports.index = async (req, res, next) => {
     });
     var assignments = await Assignment.findAll({
       where: { groupId: user.group.id },
-      order: [["deadline", "ASC"]],
+      order: [["deadline", "DESC"]],
       limit: 5,
       include: [
         {
