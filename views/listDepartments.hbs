@@ -5,7 +5,7 @@
 <div class="form-row">
     <div class="col-sm-2">
         <small class=" text-uppercase text-muted">Departments</small>
-        <p class=" h3 text-info">{{{groupsList.length}}}</p>
+        <p class=" h3 text-info" id="departmentNum"></p>
     </div>
     <div class="col-sm my-auto pr-0 text-right">
         <button type="button" class="btn btn-outline-secondary" id="addDepartmentButton" onclick="newDepartment()">
@@ -47,6 +47,7 @@
             <tr>
                 <th scope="col">Name</th>
                 <th scope="col">Teachers</th>
+                <th scope="col"></th>
             </tr>
         </thead>
         <tbody id="tbody">
@@ -55,7 +56,5 @@
     </table>
 </div>
 <div id="pagination"></div>
-<script>
-    var departmentsList = {{{ json departmentsList }}}
-</script>
+
 <script src="/js/listDepartments.js"></script>

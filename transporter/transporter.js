@@ -4,7 +4,7 @@ const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASSWORD, // naturally, replace both with your real credentials or an application-specific password
+    pass: process.env.GMAIL_PASSWORD,
   },
 });
 
@@ -13,7 +13,7 @@ module.exports.sendConfirmation = function (link, email) {
     from: process.env.GMAIL_USER,
     to: email,
     subject: "Email Change Confirmation",
-    html: `You have requested that your user profile on {SITE_NAME} should be updated with this email address {newAdress}.<br>
+    html: `You have requested that your user profile on School System should be updated.<br>
         If you did not do this, please ignore this email. Please do not reply.<br>        
         To complete the update of your user profile, please follow this link:<br>        
         ${link}<br>

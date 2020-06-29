@@ -1,9 +1,13 @@
 const express = require("express");
+const app = express();
 const nodemailer = require("nodemailer");
 const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const path = require("path");
+var server = require("http").createServer(app);
+var io = require("socket.io")(server);
+
 //models
 const User = require("./models/userModel");
 const Hash = require("./models/hashModel");
@@ -18,14 +22,13 @@ const Announcement = require("./models/announcementModel");
 const createAdmin = require("./config/createAdminAccount");
 
 const routes = require("./routes/route");
+const apiRoutes = require("./routes/apiRoutes");
 const teacherRoutes = require("./routes/teacherRoutes");
 const studentRoutes = require("./routes/studentRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const { Sequelize } = require("sequelize");
 global.__basedir = __dirname;
 require("dotenv").config();
-
-const app = express();
 
 const PORT = process.env.PORT || 3000;
 
@@ -108,11 +111,14 @@ var hbs = require("express-handlebars");
 app.use(express.static("public"));
 
 app.use("/", routes);
+app.use("/", apiRoutes);
 app.use("/", adminRoutes);
 app.use("/teacher", teacherRoutes);
 app.use("/student", studentRoutes);
 
 const hbsHelpers = require("./views/helpers/helpers");
+const { chat } = require("./controllers/studentController");
+const { disconnect } = require("process");
 
 app.engine(
   "hbs",
@@ -126,9 +132,65 @@ app.engine(
 );
 
 app.set("view engine", "hbs");
-const server = app.listen(PORT, (error) => {
+
+// Chatroom
+var chatUsers = [];
+
+io.on("connection", (socket) => {
+  var addedUser = false;
+
+  // when the client emits 'join user', this listens and executes
+  socket.on("join user", (user) => {
+    // if user already has a chat open, emit the message below
+    if (
+      addedUser ||
+      chatUsers.filter((value, index, array) => value.id == user.id).length !==
+        0
+    ) {
+      socket.emit("multiple windows");
+    } else {
+      // we store the username in the socket session for this client
+      socket.user = user;
+      chatUsers.push(user);
+      addedUser = true;
+
+      socket.emit("user joined", {
+        user: socket.user,
+        chatUsers: chatUsers,
+      });
+      // echo globally (all clients) the new user list
+      socket.broadcast.emit("user joined", {
+        user: socket.user,
+        chatUsers: chatUsers,
+      });
+    }
+  });
+  // when the client emits 'new message', this listens and executes
+  socket.on("new message", (data) => {
+    // we tell the client to execute 'new message'
+    socket.broadcast.emit("new message", {
+      user: socket.user,
+      message: data,
+    });
+  });
+  // when the user disconnects.. perform this
+  socket.on("disconnect", () => {
+    if (addedUser) {
+      chatUsers = chatUsers.filter(
+        (value, index, array) => value.id !== socket.user.id
+      );
+      // echo globally that this client has left
+      socket.broadcast.emit("user left", {
+        user: socket.user,
+        chatUsers: chatUsers,
+      });
+    }
+  });
+});
+
+server.listen(3000, (error) => {
   if (error) {
-    console.log("Error starting the server");
+    console.log("Error running the server");
   }
-  console.log("This server is running on port", server.address().port);
+  console.log("The server is running on port", 3000);
 });

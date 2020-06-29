@@ -256,3 +256,14 @@ exports.viewAnnouncements = async (req, res, next) => {
     announcements: announcements.map((announcement) => announcement.toJSON()),
   });
 };
+
+exports.chat = async (req, res, next) => {
+  const user = res.locals.loggedInUser;
+
+  return res.render("studentChat", {
+    layout: "default",
+    user: res.locals.loggedInUser.toJSON(),
+    template: "home-template",
+    title: "Student Chat",
+  });
+};

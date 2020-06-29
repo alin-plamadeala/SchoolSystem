@@ -5,7 +5,7 @@
 <div class="form-row">
     <div class="col-sm-2">
         <small class=" text-uppercase text-muted">Groups</small>
-        <p class=" h3 text-info">{{{groupsList.length}}}</p>
+        <p class=" h3 text-info" id="groupsNum"></p>
     </div>
     <div class="col-sm my-auto pr-0 text-right">
         <button type="button" class="btn btn-outline-secondary" id="addGroupButton" onclick="newGroup()">
@@ -67,11 +67,4 @@
     </table>
 </div>
 <div id="pagination"></div>
-<script>
-    var role = {{{ json role }}}
-    var courseList = {{{ json courseList }}}
-    var teachersList = {{{ json teachersList }}}
-    var groupsList = {{{ json groupsList }}}
-
-</script>
 <script src="/js/listGroups.js"></script>

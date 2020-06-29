@@ -36,6 +36,19 @@ exports.allowIfLoggedin = async (req, res, next) => {
     next(error);
   }
 };
+
+//return current user
+exports.currentUser = async (req, res, next) => {
+  try {
+    const user = res.locals.loggedInUser;
+
+    return res.json(user);
+  } catch (error) {
+    console.log(error);
+    return res.json("Error");
+  }
+};
+
 //encrypt the password
 async function hashPassword(password) {
   return await bcrypt.hash(password, 10);

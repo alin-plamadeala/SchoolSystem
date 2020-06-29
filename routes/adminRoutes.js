@@ -62,28 +62,7 @@ router.get(
   "/courses",
   userController.allowIfLoggedin,
   userController.grantAccess("readAny", "course"),
-  dashboardController.getCourses
-);
-//Add course
-router.post(
-  "/courses/submit",
-  userController.allowIfLoggedin,
-  userController.grantAccess("createAny", "course"),
-  dashboardController.addCourse
-);
-//Get a course
-router.get(
-  "/courses/get/:courseId",
-  userController.allowIfLoggedin,
-  userController.grantAccess("readAny", "course"),
-  dashboardController.getCourse
-);
-//Remove course
-router.delete(
-  "/courses/remove/:courseId",
-  userController.allowIfLoggedin,
-  userController.grantAccess("deleteAny", "course"),
-  dashboardController.removeCourse
+  dashboardController.showCourses
 );
 
 //List student groups
@@ -93,41 +72,13 @@ router.get(
   userController.grantAccess("readAny", "group"),
   dashboardController.getStudentGroups
 );
-//Add group
-router.post(
-  "/groups/submit",
-  userController.allowIfLoggedin,
-  userController.grantAccess("createAny", "group"),
-  dashboardController.addGroup
-);
-//Get a group
-router.get(
-  "/groups/get/:groupId",
-  userController.allowIfLoggedin,
-  userController.grantAccess("readAny", "group"),
-  dashboardController.getGroup
-);
-//Remove group
-router.delete(
-  "/groups/remove/:groupId",
-  userController.allowIfLoggedin,
-  userController.grantAccess("deleteAny", "group"),
-  dashboardController.removeGroup
-);
+
 //List teacher departments
 router.get(
   "/departments",
   userController.allowIfLoggedin,
   userController.grantAccess("readAny", "group"),
-  dashboardController.getTeacherDepartments
-);
-
-//Add teacher department
-router.post(
-  "/departments/submit",
-  userController.allowIfLoggedin,
-  userController.grantAccess("createAny", "group"),
-  dashboardController.addDepartment
+  dashboardController.showTeacherDepartments
 );
 
 module.exports = router;

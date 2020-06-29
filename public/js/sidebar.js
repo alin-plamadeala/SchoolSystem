@@ -15,6 +15,7 @@ $(document).ready(function () {
 
   //Make active and expand the curent item on side menu
   var loc = window.location.pathname;
+  // add active atribute to current location
   $("#sidebar")
     .find("a")
     .each(function () {
@@ -22,6 +23,8 @@ $(document).ready(function () {
         .parent()
         .toggleClass("active", $(this).attr("href") == loc);
     });
+
+  // expand menu for current location
   $("#sidebar")
     .find("ul.collapse > li.active")
     .each(function () {

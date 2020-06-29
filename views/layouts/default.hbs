@@ -55,7 +55,7 @@
     <!-- Right side  -->
     <div id="right">
       {{!-- NavBar --}}
-      <nav class="navbar navbar-expand-sm navbar-light bg-light topbar sticky-top">
+      <nav id="top" class="navbar navbar-expand-sm navbar-light bg-light topbar sticky-top">
         <div class="container-fluid">
           {{!-- Toggle side menu --}}
           <button type="button" id="sidebarCollapse" class="btn btn-info">
@@ -97,8 +97,9 @@
       <div id="content" class="{{template}}">
 
         {{{body}}}
+        {{> footer}}
       </div>
-      {{> footer}}
+
     </div>
   </div>
 

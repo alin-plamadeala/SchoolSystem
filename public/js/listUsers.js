@@ -21,29 +21,35 @@ function displayPaginatedContent() {
         if (!item.group) {
           item.group = "undefined";
         }
-        dataHtml += `           <tr id="${item.id}">
-                  <td>${item.fullName}</td>
-                  <td>${item.email}</td>
-                  <td>${item.group.name}</td>
-                  <td>
-                  <button type="button" onclick="removeUser(${item.id})" class="btn btn-danger">Delete</button>
-                  <button type="button" onclick="editUser(${item.id})"class="btn btn-info">Edit</button>
-                  </td>
-              </tr>`;
+        dataHtml += renderItem(item);
       });
       container = $("#tbody");
       container.html(dataHtml);
     },
   });
 }
+
+//html to display user
+function renderItem(item) {
+  html = `
+<tr id="${item.id}">
+  <td>${item.fullName}</td>
+  <td>${item.email}</td>
+  <td>${item.group.name}</td>
+  <td>
+  <button type="button" onclick="removeUser(${item.id})" class="btn btn-danger">Delete</button>
+  <button type="button" onclick="editUser(${item.id})"class="btn btn-info">Edit</button>
+  </td>
+</tr>`;
+  return html;
+}
+
 //Search user by name
 function search() {
   var input = {
     name: $("#search-input").val().toLowerCase(),
     group: $("#selectGroup").val(),
   };
-  //todo include group parameter in search
-  console.log(input.group);
   var result = userList.filter(function (student) {
     if (
       student.fullName.toLowerCase().indexOf(input.name) != -1 &&
@@ -52,18 +58,10 @@ function search() {
       return true;
     }
   });
-  result;
   var dataHtml;
   if (result.length) {
     $.each(result, function (index, item) {
-      dataHtml += `            <tr id="${item.id}">
-                    <td>${item.fullName}</td>
-                    <td>${item.email}</td>
-                    <td>${item.group.name}</td>
-                    <td>                  
-                    <button type="button" onclick="removeUser(${item.id})" class="btn btn-danger">Delete</button>
-                    <button type="button" onclick="editUser(${item.id})"class="btn btn-info">Edit</button></td>
-                </tr>`;
+      dataHtml += renderItem(item);
     });
   } else {
     dataHtml = `<p>No users found</p>`;
@@ -75,6 +73,7 @@ function search() {
   container = $("#tbody");
   container.html(dataHtml);
 }
+
 //Remove search filters
 function removeFilters() {
   displayPaginatedContent();
@@ -82,6 +81,7 @@ function removeFilters() {
   $("#search-input").val("");
   $("#selectGroup").val("");
 }
+
 //Display form to add a user
 function newUser() {
   const form = `             <tr id="addUser">
@@ -124,7 +124,6 @@ function newUser() {
       </div>`);
         },
         success: function (data) {
-          console.log({ data });
           var user = data.data;
           //Display success
           $("#alert")
@@ -156,6 +155,7 @@ function removeUser(id) {
     $(`#${id}`).hide();
   }
 }
+
 //edit an user
 function editUser(id) {
   var user;
@@ -247,6 +247,7 @@ function resetRow(id) {
     },
   });
 }
+
 //config to parse csv files
 config = {
   delimiter: "", // auto-detect

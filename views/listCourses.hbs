@@ -1,13 +1,11 @@
 <script src="/js/pagination.min.js"></script>
 <script src="/js/bootstrap-select.min.js"></script>
 <link rel="stylesheet" href="/css/bootstrap-select.min.css">
-<div id="list"></div>
-
 
 <div class="form-row">
     <div class="col-sm-2">
         <small class=" text-uppercase text-muted">Courses</small>
-        <p class=" h3 text-info">{{{courseList.length}}}</p>
+        <p class="h3 text-info" id="courseNum"></p>
     </div>
     <div class="col-sm my-auto pr-0 text-right">
         <button type="button" class="btn btn-outline-secondary" id="addCourseButton" onclick="newCourse()">
@@ -36,8 +34,7 @@
     <div class="col-sm-3 my-auto pl-0">
         <form action="javascript:;" onsubmit="search()" id="search-form">
             <div class="input-group my-auto">
-                <input type="search" class="form-control" placeholder="Search..." aria-label="Recipient's course"
-                    aria-label="Search" id="search-input">
+                <input type="search" class="form-control" placeholder="Search..." aria-label="Search" id="search-input">
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><i
                             class="fas fa-search"></i></button>
@@ -69,10 +66,5 @@
     </table>
 </div>
 <div id="pagination"></div>
-<script>
-    var courseList = {{{ json courseList }}}
-    var teachersList = {{{ json teachersList }}}
-    var groupsList = {{{ json groupsList }}}
 
-</script>
 <script src="/js/listCourses.js"></script>

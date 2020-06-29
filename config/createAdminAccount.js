@@ -2,10 +2,8 @@ const Group = require("../models/groupModel");
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
 
-//create admin group
-
-//create admin account
 exports.adminAccount = async () => {
+  //create admin group
   await Group.findOrCreate({
     where: {
       id: 99999,
@@ -15,6 +13,8 @@ exports.adminAccount = async () => {
       role: "admin",
     },
   });
+
+  //create admin account
   await User.findOrCreate({
     where: {
       email: "admin@admin.com",

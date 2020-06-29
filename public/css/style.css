@@ -323,4 +323,8 @@ ul ul ul a {
   .dropdown-item {
     white-space: normal;
   }
+  #content {
+    padding-left: 5%;
+    padding-right: 5%;
+  }
 }

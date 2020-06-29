@@ -3,10 +3,12 @@ const Group = require("../models/groupModel");
 const Course = require("../models/courseModel");
 const bcrypt = require("bcrypt");
 const transporter = require("../transporter/transporter");
+
 //encrypt the password
 async function hashPassword(password) {
   return await bcrypt.hash(password, 10);
 }
+
 //return all student users
 exports.getStudents = async (req, res, next) => {
   const students = await User.findAll({
@@ -212,7 +214,6 @@ exports.removeUser = async (req, res, next) => {
 };
 
 //get user
-
 exports.getUser = async (req, res, next) => {
   const { userId } = req.params;
 
@@ -230,263 +231,27 @@ exports.getUser = async (req, res, next) => {
     next(error);
   }
 };
-//return all courses
-exports.getCourses = async (req, res, next) => {
-  const courses = await Course.findAll({
-    attributes: ["id", "name"],
-    include: [
-      {
-        model: User,
-        as: "teacher",
-        attributes: ["id", "firstName", "lastName"],
-      },
-      {
-        model: Group,
-        attributes: ["id"],
-      },
-    ],
-  });
-  const teachers = await User.findAll({
-    where: { role: "teacher" },
-    attributes: ["id", "firstName", "lastName"],
-  });
-  const groups = await Group.findAll({
-    where: { role: "student" },
-    attributes: ["id", "name"],
-  });
+
+//page to display all courses
+exports.showCourses = async (req, res, next) => {
   res.render("listCourses", {
     layout: "default",
     user: res.locals.loggedInUser.toJSON(),
-    courseList: courses.map((course) => course.toJSON()),
-    teachersList: teachers.map((teacher) => teacher.toJSON()),
-    groupsList: groups.map((group) => group.toJSON()),
   });
 };
-//add a course
-exports.addCourse = async (req, res, next) => {
-  try {
-    const { id, name, teacherId } = req.body;
 
-    if (!name || !teacherId) {
-      res.status(400).json({
-        title: "Error",
-        message: "Please provide valid name and teacher",
-      });
-    } else {
-      if (id) {
-        const updatedCourse = await Course.update(
-          { name, teacherId },
-          { where: { id } }
-        );
-        res.json({
-          data: updatedCourse,
-        });
-      } else {
-        const newCourse = await Course.create({
-          name,
-          teacherId,
-        });
-        res.json({
-          data: newCourse,
-        });
-      }
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-
-// get a course
-exports.getCourse = async (req, res, next) => {
-  const { courseId } = req.params;
-
-  try {
-    course = await Course.findByPk(courseId, {
-      attributes: ["id", "name"],
-      include: [
-        {
-          model: User,
-          as: "teacher",
-          attributes: ["id", "firstName", "lastName"],
-        },
-      ],
-    });
-    if (course) {
-      res.json(course.toJSON());
-    } else {
-      res.json({ message: "not found" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-//remove course
-exports.removeCourse = async (req, res, next) => {
-  const { courseId } = req.params;
-
-  try {
-    await Course.destroy({ where: { id: courseId } });
-  } catch (error) {
-    next(error);
-  }
-};
-//return all student groups
+//page to display all student groups
 exports.getStudentGroups = async (req, res, next) => {
-  const groups = await Group.findAll({
-    where: { role: "student" },
-    attributes: ["id", "name"],
-    include: [
-      {
-        model: Course,
-        attributes: ["id", "name"],
-        include: [
-          {
-            model: User,
-            as: "teacher",
-            attributes: ["id", "firstName", "lastName"],
-          },
-        ],
-      },
-    ],
-  });
-  const courses = await Course.findAll({
-    attributes: ["id", "name"],
-    include: [
-      {
-        model: User,
-        as: "teacher",
-        attributes: ["id", "firstName", "lastName"],
-      },
-    ],
-  });
-  const teachers = await User.findAll({
-    where: { role: "teacher" },
-    attributes: ["id", "firstName", "lastName"],
-  });
-
   res.render("listGroups", {
     layout: "default",
     user: res.locals.loggedInUser.toJSON(),
-    role: "student",
-    courseList: courses.map((course) => course.toJSON()),
-    groupsList: groups.map((group) => group.toJSON()),
-    teachersList: teachers.map((teacher) => teacher.toJSON()),
   });
 };
-//add a group
-exports.addGroup = async (req, res, next) => {
-  try {
-    const { id, name, role, courses } = req.body;
-    console.log(id);
-    if (!name) {
-      res.status(400).json({
-        title: "Error",
-        message: "Please provide valid name",
-      });
-    } else {
-      if (id) {
-        const updatedGroup = await Group.update(
-          {
-            name,
-          },
-          { returning: true, where: { id } }
-        );
-        await updatedGroup[1][0].setCourses(courses);
 
-        res.json({
-          data: updatedGroup,
-        });
-      } else {
-        const newGroup = await Group.create({
-          name,
-          role,
-        });
-        await newGroup.setCourses(courses);
-
-        res.json({
-          data: newGroup,
-        });
-      }
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-
-// get a group
-exports.getGroup = async (req, res, next) => {
-  const { groupId } = req.params;
-
-  try {
-    group = await Group.findByPk(groupId, {
-      attributes: ["id", "name"],
-      include: [
-        {
-          model: Course,
-          attributes: ["id", "name"],
-          include: [
-            {
-              model: User,
-              as: "teacher",
-              attributes: ["id", "firstName", "lastName"],
-            },
-          ],
-        },
-      ],
-    });
-    if (group) {
-      res.json(group.toJSON());
-    } else {
-      res.json({ message: "not found" });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-//remove group
-exports.removeGroup = async (req, res, next) => {
-  const { groupId } = req.params;
-
-  try {
-    await Group.destroy({ where: { id: groupId } });
-  } catch (error) {
-    next(error);
-  }
-};
-
-//return all teacher departments
-exports.getTeacherDepartments = async (req, res, next) => {
-  const departments = await Group.findAll({
-    where: { role: "teacher" },
-    attributes: ["id", "name"],
-    include: { model: User, as: "members" },
-  });
+//page to display all teacher departments
+exports.showTeacherDepartments = async (req, res, next) => {
   res.render("listDepartments", {
     layout: "default",
     user: res.locals.loggedInUser.toJSON(),
-    departmentsList: departments.map((department) => department.toJSON()),
   });
-};
-//add a teacher department
-exports.addDepartment = async (req, res, next) => {
-  try {
-    const { name, role } = req.body;
-    console.log({ name, role });
-    if (!name) {
-      res.status(400).json({
-        title: "Error",
-        message: "Please provide valid name",
-      });
-    } else {
-      const newDepartment = await Group.create({
-        name,
-        role,
-      });
-      res.json({
-        data: newDepartment,
-      });
-    }
-  } catch (error) {
-    next(error);
-  }
 };

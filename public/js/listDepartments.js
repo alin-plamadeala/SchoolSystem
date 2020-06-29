@@ -1,11 +1,78 @@
-//Object containing the list of departments
+var departmentsList;
 
-var data = departmentsList;
+async function renderPage() {
+  //get the departments
+  await $.get("/api/departments", (data) => {
+    departmentsList = data;
+  });
 
-console.log(data);
+  // Display number of departments
+  $("#departmentNum").text(departmentsList.length);
+
+  displayPaginatedContent(departmentsList);
+}
+
+//html to display an department
+function renderItem(item) {
+  html = `
+  <tr id="${item.id}">
+    <td>${item.name}</td>
+    <td>${item.members
+      .map(
+        (member) =>
+          `<span class="badge badge-secondary m-1">${member.firstName} ${member.lastName}</span>`
+      )
+      .join("")}</td>
+      <td>
+      <button type="button" onclick="removeDepartment(${
+        item.id
+      })" class="btn btn-danger">Delete</button>
+      <button type="button" onclick="editDepartment(${
+        item.id
+      })"class="btn btn-info">Edit</button>
+      </td>
+  </tr>`;
+
+  return html;
+}
+
+//html to display an alert
+function showAlert(response) {
+  if (response.title == "Success") {
+    return `
+    <div class="alert alert-success  alert-dismissible fade show" role="alert">
+      <strong>${response.title}!</strong> ${response.message}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    `;
+  } else {
+    return `
+    <div class="alert alert-danger  alert-dismissible fade show" role="alert">
+      <strong>${response.title}!</strong> ${response.message}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    `;
+  }
+}
+
+//Refresh row
+function resetRow(id) {
+  var user;
+  $.ajax({
+    url: `/api/departments/${id}`,
+    type: "GET",
+    success: function (result) {
+      $(`#${id}`).replaceWith(renderItem(result));
+    },
+  });
+}
 
 //pagination of list of departments
-function displayPaginatedContent() {
+function displayPaginatedContent(data) {
   $("#pagination").pagination({
     dataSource: data,
     pageSize: 10,
@@ -19,15 +86,7 @@ function displayPaginatedContent() {
       var dataHtml;
       $.each(data, function (index, item) {
         console.log(item);
-        dataHtml += `            <tr>
-                  <td>${item.name}</td>
-                  <td>${item.members
-                    .map(
-                      (member) =>
-                        `<span class="badge badge-secondary m-1">${member.firstName} ${member.lastName}</span>`
-                    )
-                    .join("")}</td>
-              </tr>`;
+        dataHtml += renderItem(item);
       });
       container = $("#tbody");
       container.html(dataHtml);
@@ -49,15 +108,7 @@ function search() {
   var dataHtml;
   if (result.length) {
     $.each(result, function (index, item) {
-      dataHtml += `            <tr>
-      <td>${item.name}</td>
-      <td>${item.members
-        .map(
-          (member) =>
-            `<span class="badge badge-secondary m-1">${member.firstName} ${member.lastName}</span>`
-        )
-        .join("")}</td>
-  </tr>`;
+      dataHtml += renderItem(item);
     });
   } else {
     dataHtml = `<p>No departments found</p>`;
@@ -69,11 +120,13 @@ function search() {
   container = $("#tbody");
   container.html(dataHtml);
 }
+
 //Remove search filters
 function removeFilters() {
-  displayPaginatedContent();
+  displayPaginatedContent(courseList);
   $("#removeFiltersButton").hide();
   $("#search-input").val("");
+  $("select").selectpicker({ style: "btn-outline-secondary" });
 }
 
 // Display form to add a department
@@ -94,33 +147,18 @@ function newDepartment() {
     $("#addDepartmentForm").submit(function (e) {
       e.preventDefault();
       $.ajax({
-        url: "/departments/submit",
+        url: "/api/departments",
         type: "post",
         data: $("#addDepartmentForm").serialize(),
         error: function (data) {
-          console.log(data);
-          var message = data.responseJSON;
           //Display error
-          $("#alert")
-            .html(`<div class="alert alert-danger  alert-dismissible fade show" role="alert">
-          <strong>${message.title}!</strong> ${message.message}.
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-          </button>
-      </div>`);
+          $("#alert").html(showAlert(data.responseJSON));
         },
         success: function (data) {
-          console.log({ data });
-          var department = data.data;
           //Display success
-          $("#alert")
-            .html(`<div class="alert alert-success  alert-dismissible fade show" role="alert">
-          <strong>Success!</strong> Department <strong>${department.name}</strong> has been created.
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-          </button>
-      </div>`);
+          $("#alert").html(showAlert(data));
           newDepartment();
+          renderPage();
         },
       });
     });
@@ -130,4 +168,68 @@ function newDepartment() {
   button.toggleClass("active");
 }
 
-displayPaginatedContent();
+//remove department
+function removeDepartment(id) {
+  if (confirm("Are you sure you want to delete this department?")) {
+    $.ajax({
+      url: `/api/departments/${id}`,
+      type: "DELETE",
+      success: function (data) {
+        //Display success
+        $("#alert").html(showAlert(data));
+        renderPage();
+      },
+      error: function (data) {
+        //Display error
+        $("#alert").html(showAlert(data.responseJSON));
+      },
+    });
+  }
+}
+
+//edit department
+function editDepartment(id) {
+  var department = departmentsList
+    .filter((department) => department.id == id)
+    .pop();
+
+  $(`#${id}`).html(`
+            <form id="editDepartmentForm-${id}"></form>
+            <input type="hidden" id="id" name="id" value="${id}" form="editDepartmentForm-${id}">
+            <td><div class="control-group"><input value="${
+              department.name
+            }" type="text" class="form-control" placeholder="Department Name" name="name" id="name" form="editDepartmentForm-${id}" required></input></div></td>
+            <td>${department.members
+              .map(
+                (member) =>
+                  `<span class="badge badge-secondary m-1">${member.firstName} ${member.lastName}</span>`
+              )
+              .join("")}</td>
+            <td>
+            <div class="form-actions"><button class="btn btn-outline-success" type="submit" form="editDepartmentForm-${id}">Save</a>
+            <button class="m-1 btn btn-outline-secondary" onclick="resetRow(${id})">Cancel</a></div>
+            </td>
+    `);
+
+  $(`#editDepartmentForm-${id}`).submit(function (e) {
+    e.preventDefault();
+    $.ajax({
+      url: "/api/departments",
+      type: "post",
+      data: $(`#editDepartmentForm-${id}`).serialize(),
+      error: function (data) {
+        //Display error
+        $("#alert").html(showAlert(data.responseJSON));
+      },
+      success: function (data) {
+        //Display success
+        $("#alert").html(showAlert(data));
+        resetRow(id);
+      },
+    });
+  });
+}
+
+$(document).ready(function () {
+  renderPage();
+});

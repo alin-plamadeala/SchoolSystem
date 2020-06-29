@@ -84,4 +84,6 @@ router.get(
   studentController.viewAnnouncements
 );
 
+router.get("/chat", userController.allowIfLoggedin, studentController.chat);
+
 module.exports = router;
