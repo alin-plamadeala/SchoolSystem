@@ -188,7 +188,7 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(3000, (error) => {
+server.listen(PORT, (error) => {
   if (error) {
     console.log("Error running the server");
   }
