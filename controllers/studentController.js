@@ -35,7 +35,7 @@ exports.showAssignments = async (req, res, next) => {
   });
   assignments = assignments.map((assignment) => {
     assignment = assignment.toJSON();
-    console.log(assignment);
+
     if (assignment.submissions.length) {
       if (assignment.submissions[0].feedback) {
         assignment.status = "Feedback Available";

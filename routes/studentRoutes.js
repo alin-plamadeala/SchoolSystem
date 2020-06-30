@@ -33,7 +33,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const mimetypeArray = file.mimetype.split("/");
-    console.log(mimetypeArray);
+
     if (allowedFileTypes.includes(mimetypeArray[mimetypeArray.length - 1])) {
       const fileName = crypto.randomBytes(18).toString("hex");
 

@@ -159,7 +159,7 @@ $("#em1").click(() => {
       return 0;
     }
   });
-  console.log("test");
+
   displayPaginatedContent(userList);
 });
 
@@ -421,7 +421,6 @@ $("#addUserList").click(function (e) {
       $("#addUserList").hide();
     },
     success: function (data) {
-      console.log(data);
       $("#results").addClass("table-success");
       $(".modal-body").prepend(`<div class="alert alert-success" role="alert">
       Users succesfully imported!

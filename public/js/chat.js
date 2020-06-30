@@ -117,7 +117,7 @@ $(function () {
 
   // on connect send the username to server
   socket.on("connect", () => {
-    $.get("../current-user", (response) => {
+    $.get("../api/current-user", (response) => {
       user = {
         id: response.id,
         username: response.firstName + " " + response.lastName,

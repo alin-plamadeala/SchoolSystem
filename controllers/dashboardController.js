@@ -6,6 +6,7 @@ const Course = require("../models/courseModel");
 exports.getStudents = async (req, res, next) => {
   return res.render("listUsers", {
     layout: "default",
+    title: "Students",
     template: "students",
     user: res.locals.loggedInUser.toJSON(),
   });
@@ -14,6 +15,7 @@ exports.getStudents = async (req, res, next) => {
 exports.getTeachers = async (req, res, next) => {
   return res.render("listUsers", {
     layout: "default",
+    title: "Teachers",
     template: "teachers",
     user: res.locals.loggedInUser.toJSON(),
   });
@@ -22,6 +24,7 @@ exports.getTeachers = async (req, res, next) => {
 exports.getAdmins = async (req, res, next) => {
   return res.render("listUsers", {
     layout: "default",
+    title: "Administrators",
     template: "administrators",
     user: res.locals.loggedInUser.toJSON(),
   });
@@ -31,6 +34,7 @@ exports.getAdmins = async (req, res, next) => {
 exports.showCourses = async (req, res, next) => {
   res.render("listCourses", {
     layout: "default",
+    title: "Courses",
     user: res.locals.loggedInUser.toJSON(),
   });
 };
@@ -39,6 +43,7 @@ exports.showCourses = async (req, res, next) => {
 exports.getStudentGroups = async (req, res, next) => {
   return res.render("listGroups", {
     layout: "default",
+    title: "Groups",
     user: res.locals.loggedInUser.toJSON(),
   });
 };
@@ -47,6 +52,7 @@ exports.getStudentGroups = async (req, res, next) => {
 exports.showTeacherDepartments = async (req, res, next) => {
   return res.render("listDepartments", {
     layout: "default",
+    title: "Departments",
     user: res.locals.loggedInUser.toJSON(),
   });
 };

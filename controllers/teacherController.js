@@ -10,6 +10,22 @@ const Announcement = require("../models/announcementModel");
 const moment = require("moment");
 
 const sanitizeHtml = require("sanitize-html");
+const allowedHtml = {
+  allowedTags: sanitizeHtml.defaults.allowedTags.concat([
+    "b",
+    "i",
+    "em",
+    "strong",
+    "a",
+    "span",
+    "tr",
+    "td",
+  ]),
+  allowedAttributes: {
+    a: ["href"],
+    span: ["style", "class"],
+  },
+};
 
 const { roles } = require("../roles");
 
@@ -33,7 +49,7 @@ exports.postAssignment = async (req, res, next) => {
     });
   }
   //sanitize description html
-  var descriptionClean = sanitizeHtml(description);
+  var descriptionClean = sanitizeHtml(description, allowedHtml);
   const deadline = moment(date + " " + time);
   if (Array.isArray(groups)) {
     var newAssignments = [];
@@ -115,7 +131,7 @@ exports.saveEdits = async (req, res, next) => {
   const deadline = moment(date + " " + time);
 
   //sanitize description html
-  var descriptionClean = sanitizeHtml(description);
+  var descriptionClean = sanitizeHtml(description, allowedHtml);
   if (file) {
     newFile = await AssignmentFile.create({
       name: file.filename,
@@ -192,7 +208,7 @@ exports.showAssignment = async (req, res, next) => {
       ],
     });
     // assignment.description.replace("&", "&amp;");
-    return render("viewAssignment", {
+    return res.render("viewAssignment", {
       layout: "default",
       template: "home-template",
       title: "Assignment " + assignment.title,
@@ -200,6 +216,7 @@ exports.showAssignment = async (req, res, next) => {
       assignment: assignment.toJSON(),
     });
   } catch (error) {
+    console.log(error);
     return res.render("viewAssignment", {
       layout: "default",
       template: "home-template",
@@ -241,6 +258,7 @@ exports.showSubmissions = async (req, res, next) => {
 
   return res.render("viewSubmissions", {
     layout: "default",
+    title: "Submissions",
     user: res.locals.loggedInUser.toJSON(),
     students_submissions,
   });
@@ -266,6 +284,7 @@ exports.showSubmission = async (req, res, next) => {
 
   return res.render("viewSubmission", {
     layout: "default",
+    title: "Submission",
     user: res.locals.loggedInUser.toJSON(),
     assignment: assignment.toJSON(),
     submission: submission.toJSON(),
@@ -276,7 +295,7 @@ exports.submitFeedback = async (req, res, next) => {
   const { submissionId } = req.params;
   const { grade, feedbackText } = req.body;
 
-  var feedbackTextClean = sanitizeHtml(feedbackText);
+  var feedbackTextClean = sanitizeHtml(feedbackText, allowedHtml);
 
   const newFeedback = await Feedback.create({
     feedbackText: feedbackTextClean,
@@ -361,7 +380,7 @@ exports.editAnnouncement = async (req, res, next) => {
 exports.saveAnnouncement = async (req, res, next) => {
   const user = res.locals.loggedInUser;
   var { announcementId, title, description, groups } = req.body;
-  var descriptionClean = sanitizeHtml(description);
+  var descriptionClean = sanitizeHtml(description, allowedHtml);
   if (!Array.isArray(groups)) {
     groups = [groups];
   }

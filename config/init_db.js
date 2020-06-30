@@ -22,6 +22,7 @@ exports.init = async () => {
   await Submission.sync();
   await Feedback.sync();
   await Announcement.sync();
+
   await adminAccount();
 };
 

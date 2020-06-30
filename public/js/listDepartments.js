@@ -85,7 +85,6 @@ function displayPaginatedContent(data) {
         .addClass("page-link");
       var dataHtml;
       $.each(data, function (index, item) {
-        console.log(item);
         dataHtml += renderItem(item);
       });
       container = $("#tbody");

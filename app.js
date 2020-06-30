@@ -36,6 +36,7 @@ const PORT = process.env.PORT || 3000;
 const db = require("./config/database");
 
 initDb.init();
+db.sync();
 
 //db test
 db.authenticate()

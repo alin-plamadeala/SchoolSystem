@@ -42,6 +42,7 @@ exports.getConfirmEmail = async (req, res, next) => {
     });
 
     return res.render("confirmPassword", {
+      title: "Email update",
       layout: "loginLayout",
       user: user.toJSON(),
       token: token.hash,
@@ -153,8 +154,6 @@ exports.getConfirmPasswordReset = async (req, res, next) => {
     token = await Hash.findOne({ where: { hash: reqToken } });
     // check if token userId matches the request userId
     if (!token.userId == userId) {
-      console.log("test");
-
       return res.render("error", {
         layout: false,
         title: "Error",
@@ -163,6 +162,7 @@ exports.getConfirmPasswordReset = async (req, res, next) => {
     }
     // render the reset password page
     return res.render("resetPassword", {
+      title: "Reset Password",
       layout: "loginLayout",
       reqToken: reqToken,
       userId: userId,

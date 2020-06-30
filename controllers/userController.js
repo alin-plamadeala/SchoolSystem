@@ -105,6 +105,7 @@ async function validateProfile(input, updateUser) {
 //edit profile page
 exports.getEditProfile = async (req, res, next) => {
   return res.render("editProfile", {
+    title: "Edit profile",
     layout: "default",
     user: res.locals.loggedInUser.toJSON(),
   });
@@ -131,6 +132,7 @@ exports.postEditProfile = async (req, res, next) => {
 
     if (Object.keys(pageErrors).length) {
       return res.render("editProfile", {
+        title: "Edit profile",
         layout: "default",
         user: res.locals.loggedInUser.toJSON(),
         pageErrors: pageErrors,
@@ -162,6 +164,7 @@ exports.postEditProfile = async (req, res, next) => {
         res.cookie("Authorization", "");
       }
       return res.render("editProfile", {
+        title: "Edit profile",
         layout: "default",
         user: res.locals.loggedInUser.toJSON(),
         message: message,
@@ -181,6 +184,7 @@ exports.logout = async (req, res, next) => {
 //display forgot passsword page
 exports.forgotPassword = async (req, res, next) => {
   return res.render("forgotPassword", {
+    title: "Forgot password",
     layout: "loginLayout",
   });
 };
@@ -192,6 +196,7 @@ exports.resetPassword = async (req, res, next) => {
     const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.render("forgotPassword", {
+        title: "Forgot password",
         layout: "loginLayout",
         pageErrors: {
           email: "Email does not exist",
@@ -210,6 +215,7 @@ exports.resetPassword = async (req, res, next) => {
       transporter.resetPassword(link, user.email);
 
       return res.render("forgotPassword", {
+        title: "Forgot password",
         layout: "loginLayout",
         confirm: true,
       });
@@ -251,6 +257,7 @@ exports.login = async (req, res, next) => {
 //render login page
 exports.loginPage = async (req, res, next) => {
   return res.render("login", {
+    title: "Login",
     layout: "loginLayout",
   });
 };
