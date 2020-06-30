@@ -10,16 +10,16 @@ var io = require("socket.io")(server);
 
 //models
 const User = require("./models/userModel");
-const Hash = require("./models/hashModel");
-const Group = require("./models/groupModel");
 const Course = require("./models/courseModel");
+const Group = require("./models/groupModel");
+const Hash = require("./models/hashModel");
 const AssignmentFile = require("./models/assignmentFiles");
 const Assignment = require("./models/assignmentModel");
 const Submission = require("./models/submissionModel");
 const SubmissionFile = require("./models/submissionFiles");
 const Feedback = require("./models/feedbackModel");
 const Announcement = require("./models/announcementModel");
-const createAdmin = require("./config/createAdminAccount");
+const initDb = require("./config/init_db");
 
 const routes = require("./routes/route");
 const apiRoutes = require("./routes/apiRoutes");
@@ -34,20 +34,9 @@ const PORT = process.env.PORT || 3000;
 
 //database
 const db = require("./config/database");
-//sync db tables
-User.sync();
-Hash.sync();
-Group.sync();
-Course.sync();
-AssignmentFile.sync();
-Assignment.sync();
-Submission.sync();
-SubmissionFile.sync();
-Feedback.sync();
-Announcement.sync();
-db.sync();
-//create admin account
-createAdmin.adminAccount();
+
+initDb.init();
+
 //db test
 db.authenticate()
   .then(() => console.log("Database connected..."))

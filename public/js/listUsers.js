@@ -15,19 +15,6 @@ async function renderPage() {
     await $.get("../api/groups", (data) => {
       groupsList = data;
     });
-    ////sort by email
-    // userList.sort((a, b) => {
-    //   // a should come before b in the sorted order
-    //   if (a.email < b.email) {
-    //     return -1;
-    //     // a should come after b in the sorted order
-    //   } else if (a.email > b.email) {
-    //     return 1;
-    //     // and and b are the same
-    //   } else {
-    //     return 0;
-    //   }
-    // });
 
     role = "student";
     $("#defOption").text("Any group");

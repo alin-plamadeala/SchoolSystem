@@ -59,7 +59,7 @@ exports.showAssignments = async (req, res, next) => {
       }
     }
     if (permission.granted) {
-      res.render("viewAssignmentsStudent", {
+      return res.render("viewAssignmentsStudent", {
         layout: "default",
         title: "View assignments",
         user: res.locals.loggedInUser.toJSON(),
@@ -74,7 +74,7 @@ exports.showAssignments = async (req, res, next) => {
       });
     }
   } catch (error) {
-    res.status(500).json({ message: "error" });
+    return res.status(500).json({ message: "error" });
     console.log(error);
   }
 };
@@ -103,14 +103,14 @@ exports.showAssignment = async (req, res, next) => {
       }
     }
     if (permission.granted) {
-      res.render("viewAssignmentStudent", {
+      return res.render("viewAssignmentStudent", {
         layout: "default",
         title: "Assignment " + assignment.title,
         user: res.locals.loggedInUser.toJSON(),
         assignment: assignment.toJSON(),
       });
     } else {
-      res.render("error", {
+      return res.render("error", {
         layout: false,
         title: "Error",
         message: "Access Denied",
@@ -118,7 +118,7 @@ exports.showAssignment = async (req, res, next) => {
     }
   } catch (error) {
     console.log(error);
-    res.render("viewAssignment", {
+    return res.render("viewAssignment", {
       layout: "default",
       title: "Assignment",
       user: res.locals.loggedInUser.toJSON(),
@@ -187,7 +187,7 @@ exports.submitAssignment = async (req, res, next) => {
     }
   }
 
-  res.redirect(`./${assignmentId}`);
+  return res.redirect(`./${assignmentId}`);
 };
 
 exports.getAssignmentFile = async (req, res, next) => {
@@ -197,7 +197,7 @@ exports.getAssignmentFile = async (req, res, next) => {
   });
   const file = assignment.file;
   const returnedFile = `${__basedir}/uploads/${file.name}`;
-  res.download(returnedFile, file.originalName); // Set disposition and send it.
+  return res.download(returnedFile, file.originalName); // Set disposition and send it.
 };
 exports.getSubmissionFile = async (req, res, next) => {
   const { submissionId } = req.params;
@@ -219,12 +219,12 @@ exports.getSubmissionFile = async (req, res, next) => {
   }
   if (permission.granted) {
     try {
-      res.download(returnedFile, file.originalName); // Set disposition and send it.
+      return res.download(returnedFile, file.originalName); // Set disposition and send it.
     } catch (error) {
       console.log(error);
     }
   } else {
-    res.render("error", {
+    return res.render("error", {
       layout: false,
       title: "Error",
       message: "Access Denied",
@@ -243,7 +243,7 @@ exports.viewAnnouncements = async (req, res, next) => {
     order: [["createdAt", "DESC"]],
   });
 
-  res.render("viewAnnouncementsStudent", {
+  return res.render("viewAnnouncementsStudent", {
     layout: "default",
     user: res.locals.loggedInUser.toJSON(),
     title: "Announcements",

@@ -229,7 +229,7 @@ exports.postConfirmPasswordReset = async (req, res, next) => {
       });
       // check if password confirm entered
     } else if (!confirmPassword) {
-      res.status(400).render("resetPassword", {
+      return res.status(400).render("resetPassword", {
         layout: "loginLayout",
         reqToken: reqToken,
         userId: userId,
@@ -237,7 +237,7 @@ exports.postConfirmPasswordReset = async (req, res, next) => {
       });
       //check if passwords match
     } else if (!(newPassword == confirmPassword)) {
-      res.status(400).render("resetPassword", {
+      return res.status(400).render("resetPassword", {
         layout: "loginLayout",
         reqToken: reqToken,
         userId: userId,

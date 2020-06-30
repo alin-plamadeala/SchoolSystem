@@ -50,7 +50,7 @@ exports.index = async (req, res, next) => {
       return assignment;
     });
 
-    res.render("indexStudent", {
+    return res.render("indexStudent", {
       layout: "default",
       template: "home-template",
       user: res.locals.loggedInUser.toJSON(),
@@ -67,7 +67,7 @@ exports.index = async (req, res, next) => {
       order: [["createdAt", "DESC"]],
       limit: 10,
     });
-    res.render("indexTeacher", {
+    return res.render("indexTeacher", {
       layout: "default",
       template: "home-template",
       user: res.locals.loggedInUser.toJSON(),
@@ -76,6 +76,6 @@ exports.index = async (req, res, next) => {
       assignments: assignments,
     });
   } else if (user.role === "admin") {
-    res.redirect("/users/students");
+    return res.redirect("/users/students");
   }
 };

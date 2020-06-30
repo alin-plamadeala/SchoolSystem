@@ -14,7 +14,7 @@ const sanitizeHtml = require("sanitize-html");
 const { roles } = require("../roles");
 
 exports.createAssignment = async (req, res, next) => {
-  res.render("createAssignment", {
+  return res.render("createAssignment", {
     layout: "default",
     template: "home-template",
     title: "Create Assignment",
@@ -49,7 +49,7 @@ exports.postAssignment = async (req, res, next) => {
       await newAssignments[i].setGroup(groups[i]);
       await newAssignments[i].setFile(newFile);
     }
-    res.render("createAssignment", {
+    return res.render("createAssignment", {
       layout: "default",
       template: "home-template",
       title: "Assignment Created",
@@ -70,7 +70,7 @@ exports.postAssignment = async (req, res, next) => {
     await newAssignment.setGroup(groups);
     await newAssignment.setFile(newFile);
 
-    res.render("createAssignment", {
+    return res.render("createAssignment", {
       layout: "default",
       template: "home-template",
       title: "Assignment Created",
@@ -89,7 +89,7 @@ exports.editAssignment = async (req, res, next) => {
     assignment = assignment.toJSON();
     assignment.date = moment(assignment.deadline).format("YYYY-MM-DD");
     assignment.time = moment(assignment.deadline).format("HH:mm");
-    res.render("editAssignment", {
+    return res.render("editAssignment", {
       layout: "default",
       template: "home-template",
       title: "Edit Assignment",
@@ -98,7 +98,7 @@ exports.editAssignment = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    res.render("viewAssignment", {
+    return res.render("viewAssignment", {
       layout: "default",
       template: "home-template",
       title: "Assignment",
@@ -141,7 +141,7 @@ exports.saveEdits = async (req, res, next) => {
     );
   }
 
-  res.redirect(`../${id}`);
+  return res.redirect(`../${id}`);
 };
 
 exports.deleteAssignment = async (req, res, next) => {
@@ -164,7 +164,7 @@ exports.showAssignments = async (req, res, next) => {
   const inactiveAssignments = assignments.filter(
     (assignments) => !assignments.active
   );
-  res.render("viewAssignments", {
+  return res.render("viewAssignments", {
     layout: "default",
     template: "home-template",
     title: "View assignments",
@@ -192,7 +192,7 @@ exports.showAssignment = async (req, res, next) => {
       ],
     });
     // assignment.description.replace("&", "&amp;");
-    res.render("viewAssignment", {
+    return render("viewAssignment", {
       layout: "default",
       template: "home-template",
       title: "Assignment " + assignment.title,
@@ -200,7 +200,7 @@ exports.showAssignment = async (req, res, next) => {
       assignment: assignment.toJSON(),
     });
   } catch (error) {
-    res.render("viewAssignment", {
+    return res.render("viewAssignment", {
       layout: "default",
       template: "home-template",
       title: "Assignment",
@@ -239,7 +239,7 @@ exports.showSubmissions = async (req, res, next) => {
     return student;
   });
 
-  res.render("viewSubmissions", {
+  return res.render("viewSubmissions", {
     layout: "default",
     user: res.locals.loggedInUser.toJSON(),
     students_submissions,
@@ -264,7 +264,7 @@ exports.showSubmission = async (req, res, next) => {
     ],
   });
 
-  res.render("viewSubmission", {
+  return res.render("viewSubmission", {
     layout: "default",
     user: res.locals.loggedInUser.toJSON(),
     assignment: assignment.toJSON(),
@@ -284,7 +284,7 @@ exports.submitFeedback = async (req, res, next) => {
     submissionId,
   });
 
-  res.redirect("back");
+  return res.redirect("back");
 };
 
 exports.getFile = async (req, res, next) => {
@@ -294,7 +294,7 @@ exports.getFile = async (req, res, next) => {
   });
   const file = assignment.file;
   const returnedFile = `${__basedir}/uploads/${file.name}`;
-  res.download(returnedFile, file.originalName); // Set disposition and send it.
+  return res.download(returnedFile, file.originalName); // Set disposition and send it.
 };
 
 exports.getSubmissionFile = async (req, res, next) => {
@@ -305,7 +305,7 @@ exports.getSubmissionFile = async (req, res, next) => {
   });
   const file = submission.file;
   const returnedFile = `${__basedir}/uploads/${file.name}`;
-  res.download(returnedFile, file.originalName);
+  return res.download(returnedFile, file.originalName);
 };
 
 exports.createAnnouncement = async (req, res, next) => {
