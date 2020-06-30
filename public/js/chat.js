@@ -60,7 +60,7 @@ $(function () {
     return $("<div/>").text(input).html();
   };
 
-  // Gets the color of a username through our hash function
+  // Gets the color of a username through  hash function
   const getUsernameColor = (username) => {
     // Compute hash code
     var hash = 7;
@@ -103,7 +103,6 @@ $(function () {
       socket.emit("new message", message);
     }
   };
-
   // refresh userlist contents
   const updateUserList = (userList) => {
     $usersNum.text(userList.length);
@@ -135,8 +134,8 @@ $(function () {
     });
   });
 
-  // Whenever the server emits 'user joined', update the user list
-  socket.on("user joined", (data) => {
+  // Whenever the server emits 'update users', update the user list
+  socket.on("update users", (data) => {
     updateUserList(data.chatUsers);
   });
 
@@ -145,15 +144,10 @@ $(function () {
     addChatMessage(data);
   });
 
-  // Whenever the server emits 'user left', update the user list
-  socket.on("user left", (data) => {
-    updateUserList(data.chatUsers);
-  });
-
+  // Whenever the server emits 'multiple windows', display a warning
   socket.on("multiple windows", () => {
     $(".chatPage").html(
       `<h3>Please close all other chat windows and refresh the page!</h3>`
     );
-    // console.log("only 1 window of chat");
   });
 });

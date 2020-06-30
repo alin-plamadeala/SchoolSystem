@@ -117,8 +117,6 @@ app.use("/teacher", teacherRoutes);
 app.use("/student", studentRoutes);
 
 const hbsHelpers = require("./views/helpers/helpers");
-const { chat } = require("./controllers/studentController");
-const { disconnect } = require("process");
 
 app.engine(
   "hbs",
@@ -154,13 +152,12 @@ io.on("connection", (socket) => {
       chatUsers.push(user);
       addedUser = true;
 
-      socket.emit("user joined", {
+      socket.emit("update users", {
         user: socket.user,
         chatUsers: chatUsers,
       });
       // echo globally (all clients) the new user list
-      socket.broadcast.emit("user joined", {
-        user: socket.user,
+      socket.broadcast.emit("update users", {
         chatUsers: chatUsers,
       });
     }
@@ -179,12 +176,10 @@ io.on("connection", (socket) => {
       chatUsers = chatUsers.filter(
         (value, index, array) => value.id !== socket.user.id
       );
-      // echo globally that this client has left
-      socket.broadcast.emit("user left", {
-        user: socket.user,
-        chatUsers: chatUsers,
-      });
     }
+    socket.broadcast.emit("update users", {
+      chatUsers: chatUsers,
+    });
   });
 });
 
