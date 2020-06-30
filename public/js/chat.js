@@ -1,6 +1,4 @@
 $(function () {
-  var FADE_TIME = 150; // ms
-  var TYPING_TIMER_LENGTH = 400; // ms
   var COLORS = [
     "#e21400",
     "#91580f",
@@ -19,15 +17,15 @@ $(function () {
   // Initialize variables
   var $window = $(window);
   var $usersList = $(".usersList"); // current user list
-  var $usersNum = $("#usersNum"); // current user list
+  var $usersNum = $("#usersNum"); // number of users
   var $messages = $(".messages"); // Messages area
   var $inputMessage = $(".inputMessage"); // Input message input box
+
   var topHeight = $("#top").height();
   var bottomHeight = $("#bottom").height();
   var chatHeight = $window.height() - topHeight - bottomHeight - 220;
 
   var user;
-  var typing = false;
   var socket = io();
 
   $(".chatArea").height(chatHeight);

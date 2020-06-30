@@ -10,6 +10,15 @@ const User = db.define("user", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  fullName: {
+    type: Sequelize.VIRTUAL,
+    get() {
+      return `${this.firstName} ${this.lastName}`;
+    },
+    set(value) {
+      throw new Error("Do not try to set the `fullName` value!");
+    },
+  },
   email: {
     type: Sequelize.STRING,
     allowNull: false,

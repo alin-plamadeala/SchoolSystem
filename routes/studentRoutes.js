@@ -78,6 +78,7 @@ router.get(
   studentController.getSubmissionFile
 );
 
+//view announcements
 router.get(
   "/announcements",
   userController.allowIfLoggedin,

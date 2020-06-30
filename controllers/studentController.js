@@ -61,7 +61,6 @@ exports.showAssignments = async (req, res, next) => {
     if (permission.granted) {
       res.render("viewAssignmentsStudent", {
         layout: "default",
-        template: "home-template",
         title: "View assignments",
         user: res.locals.loggedInUser.toJSON(),
         course: course.toJSON(),
@@ -106,7 +105,6 @@ exports.showAssignment = async (req, res, next) => {
     if (permission.granted) {
       res.render("viewAssignmentStudent", {
         layout: "default",
-        template: "home-template",
         title: "Assignment " + assignment.title,
         user: res.locals.loggedInUser.toJSON(),
         assignment: assignment.toJSON(),
@@ -114,7 +112,6 @@ exports.showAssignment = async (req, res, next) => {
     } else {
       res.render("error", {
         layout: false,
-        template: "home-template",
         title: "Error",
         message: "Access Denied",
       });
@@ -123,7 +120,6 @@ exports.showAssignment = async (req, res, next) => {
     console.log(error);
     res.render("viewAssignment", {
       layout: "default",
-      template: "home-template",
       title: "Assignment",
       user: res.locals.loggedInUser.toJSON(),
     });
@@ -230,7 +226,6 @@ exports.getSubmissionFile = async (req, res, next) => {
   } else {
     res.render("error", {
       layout: false,
-      template: "home-template",
       title: "Error",
       message: "Access Denied",
     });
@@ -250,7 +245,6 @@ exports.viewAnnouncements = async (req, res, next) => {
 
   res.render("viewAnnouncementsStudent", {
     layout: "default",
-    template: "home-template",
     user: res.locals.loggedInUser.toJSON(),
     title: "Announcements",
     announcements: announcements.map((announcement) => announcement.toJSON()),
@@ -263,7 +257,6 @@ exports.chat = async (req, res, next) => {
   return res.render("studentChat", {
     layout: "default",
     user: res.locals.loggedInUser.toJSON(),
-    template: "home-template",
     title: "Student Chat",
   });
 };

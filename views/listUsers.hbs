@@ -8,7 +8,7 @@
 <div class="form-row">
     <div class="col-sm-2">
         <small class=" text-uppercase text-muted">Accounts</small>
-        <p class=" h3 text-info">{{{userList.length}}}</p>
+        <p id="usersNum" class="h3 text-info"></p>
     </div>
     <div class="col-sm my-auto pr-0 text-right">
         <button type="button" class="btn btn-outline-secondary" id="addUserButton" onclick="newUser()">
@@ -31,8 +31,7 @@
     </div>
     <div class="col-sm-2 my-auto">
         <select class="form-control" id="selectGroup" data-live-search="true">
-            <option value="" selected>{{#ifEquals role "teacher"}}Any
-                Department{{/ifEquals}}{{#ifEquals role "student"}}Any group{{/ifEquals}}</option>
+            <option id="defOption" value="" selected>
         </select>
     </div>
     <div class="col-sm-3 my-auto pl-0">
@@ -70,9 +69,7 @@
                             onchange="handleUpload()" form="importForm" required>
                     </div>
                     <div class="form-group">
-                        <label for="group">
-                            {{#ifEquals role "teacher"}}Department{{/ifEquals}}
-                            {{#ifEquals role "student"}}Group{{/ifEquals}}
+                        <label id="importLabel" for="group">
                         </label>
                         <select class="form-control" placeholder="Group" name="group" id="csvGroupSelect"
                             data-live-search="true" form="importForm" required>
@@ -115,10 +112,9 @@
         <thead>
             <tr>
                 <th scope="col">Full Name</th>
-                <th scope="col">Email</th>
-                <th scope="col">
-                    {{#ifEquals role "teacher"}}Department{{/ifEquals}}
-                    {{#ifEquals role "student"}}Group{{/ifEquals}}</th>
+                <th id="em1" scope="col">Email</th>
+                <th id="colName" scope="col">
+                </th>
                 <th scope="col"></th>
 
             </tr>
@@ -130,8 +126,6 @@
 </div>
 <div id="pagination"></div>
 <script>
-    var userList = {{{ json userList }}}
-    var groupsList = {{{ json groupsList }}}
-    var role = {{{ json role }}}
+
 </script>
 <script src="/js/listUsers.js"></script>

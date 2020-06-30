@@ -111,7 +111,7 @@ var hbs = require("express-handlebars");
 app.use(express.static("public"));
 
 app.use("/", routes);
-app.use("/", apiRoutes);
+app.use("/api", apiRoutes);
 app.use("/", adminRoutes);
 app.use("/teacher", teacherRoutes);
 app.use("/student", studentRoutes);

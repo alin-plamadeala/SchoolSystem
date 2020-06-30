@@ -27,36 +27,7 @@ router.get(
   userController.grantAccess("readAny", "profile"),
   dashboardController.getAdmins
 );
-//Add user
-router.post(
-  "/users/submit",
-  userController.allowIfLoggedin,
-  userController.grantAccess("createAny", "profile"),
-  dashboardController.addUser
-);
 
-//Get User
-router.get(
-  "/users/get/:userId",
-  userController.allowIfLoggedin,
-  userController.grantAccess("readAny", "profile"),
-  dashboardController.getUser
-);
-
-//Remove User
-router.delete(
-  "/users/remove/:userId",
-  userController.allowIfLoggedin,
-  userController.grantAccess("deleteAny", "profile"),
-  dashboardController.removeUser
-);
-//Add user list
-router.post(
-  "/users/submitList",
-  userController.allowIfLoggedin,
-  userController.grantAccess("createAny", "profile"),
-  dashboardController.addUserList
-);
 //List all courses
 router.get(
   "/courses",

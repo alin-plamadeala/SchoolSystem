@@ -237,7 +237,6 @@ function removeGroup(id) {
       success: function (result) {
         //Display success
         $("#alert").html(showAlert(result));
-        newGroup();
       },
     });
     renderPage();

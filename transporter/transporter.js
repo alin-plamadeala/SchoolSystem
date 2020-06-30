@@ -8,6 +8,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// Send email to confirm email update
 module.exports.sendConfirmation = function (link, email) {
   const mailOptions = {
     from: process.env.GMAIL_USER,
@@ -29,6 +30,7 @@ module.exports.sendConfirmation = function (link, email) {
   });
 };
 
+// Send email to confirm password reset
 module.exports.resetPassword = function (link, email) {
   const mailOptions = {
     from: "study.cfbc@gmail.com",
@@ -47,6 +49,7 @@ module.exports.resetPassword = function (link, email) {
   });
 };
 
+// Send email containing account details
 module.exports.createAccount = function (user, password) {
   const mailOptions = {
     from: "study.cfbc@gmail.com",

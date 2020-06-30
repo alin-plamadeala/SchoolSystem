@@ -104,7 +104,7 @@ async function validateProfile(input, updateUser) {
 
 //edit profile page
 exports.getEditProfile = async (req, res, next) => {
-  res.render("editProfile", {
+  return res.render("editProfile", {
     layout: "default",
     user: res.locals.loggedInUser.toJSON(),
   });
@@ -130,7 +130,7 @@ exports.postEditProfile = async (req, res, next) => {
     const changePassword = validation[2];
 
     if (Object.keys(pageErrors).length) {
-      res.render("editProfile", {
+      return res.render("editProfile", {
         layout: "default",
         user: res.locals.loggedInUser.toJSON(),
         pageErrors: pageErrors,
@@ -161,12 +161,11 @@ exports.postEditProfile = async (req, res, next) => {
         }
         res.cookie("Authorization", "");
       }
-      res.render("editProfile", {
+      return res.render("editProfile", {
         layout: "default",
         user: res.locals.loggedInUser.toJSON(),
         message: message,
       });
-      //res.json({ pageErrors, changeEmail, changePassword });
     }
   } catch (error) {
     next(error);
@@ -176,12 +175,12 @@ exports.postEditProfile = async (req, res, next) => {
 //logout
 exports.logout = async (req, res, next) => {
   res.cookie("Authorization", "");
-  res.redirect("/login");
+  return res.redirect("/login");
 };
 
 //display forgot passsword page
 exports.forgotPassword = async (req, res, next) => {
-  res.render("forgotPassword", {
+  return res.render("forgotPassword", {
     layout: "loginLayout",
   });
 };
@@ -239,12 +238,11 @@ exports.login = async (req, res, next) => {
     const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
-    await User.update({ accessToken }, { where: { id: user.id } });
     res.cookie("Authorization", accessToken, {
       secure: false,
       httpOnly: true,
     });
-    res.redirect("/");
+    return res.redirect("/");
   } catch (error) {
     next(error);
   }
@@ -252,7 +250,7 @@ exports.login = async (req, res, next) => {
 
 //render login page
 exports.loginPage = async (req, res, next) => {
-  res.render("login", {
+  return res.render("login", {
     layout: "loginLayout",
   });
 };

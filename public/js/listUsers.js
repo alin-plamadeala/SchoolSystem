@@ -1,11 +1,144 @@
-//Object containing the list of users
-userList.forEach((user) => {
-  user.fullName = `${user.firstName} ${user.lastName}`;
-});
-var data = userList;
+var userType = $("#content").attr("class");
+var role;
+var userList;
+var groupsList;
+
+async function renderPage() {
+  // Display number of users
+
+  if (userType == "students") {
+    //get the users
+    await $.get(`../api/students`, (data) => {
+      userList = data;
+    });
+    //get the groups
+    await $.get("../api/groups", (data) => {
+      groupsList = data;
+    });
+    ////sort by email
+    // userList.sort((a, b) => {
+    //   // a should come before b in the sorted order
+    //   if (a.email < b.email) {
+    //     return -1;
+    //     // a should come after b in the sorted order
+    //   } else if (a.email > b.email) {
+    //     return 1;
+    //     // and and b are the same
+    //   } else {
+    //     return 0;
+    //   }
+    // });
+
+    role = "student";
+    $("#defOption").text("Any group");
+    $("#importLabel").text("Group");
+    $("#colName").text("Group");
+  } else if (userType == "teachers") {
+    //get the users
+    await $.get(`../api/teachers`, (data) => {
+      userList = data;
+    });
+    //get the groups
+    await $.get("../api/departments", (data) => {
+      groupsList = data;
+    });
+
+    role = "teacher";
+    $("#defOption").text("Any Department");
+    $("#importLabel").text("Department");
+    $("#colName").text("Department");
+  } else if (userType == "administrators") {
+    //get the users
+    await $.get(`../api/administrators`, (data) => {
+      userList = data;
+    });
+    //get the groups
+    await $.get("../api/admingroups", (data) => {
+      groupsList = data;
+    });
+
+    role = "admin";
+    $("#defOption").text("Any group");
+    $("#importLabel").text("Group");
+    $("#colName").text("Group");
+  }
+  $("#usersNum").text(userList.length);
+
+  $("#selectGroup").append(
+    `${groupsList
+      .map((item) => `<option value="${item.id}">${item.name}</option>`)
+      .join("")}`
+  );
+  $("#csvGroupSelect").append(
+    `${groupsList
+      .map((item) => `<option value="${item.id}">${item.name}</option>`)
+      .join("")}`
+  );
+
+  // display the content
+  displayPaginatedContent(userList);
+
+  $("select").selectpicker({ style: "btn-outline-secondary" });
+}
+
+//html to display user
+function renderItem(item) {
+  html = `
+<tr id="${item.id}">
+  <td>${item.fullName}</td>
+  <td>${item.email}</td>
+  <td>${item.group.name}</td>
+  <td>
+  <button type="button" onclick="removeUser(${item.id})" class="btn btn-danger">Delete</button>
+  <button type="button" onclick="editUser(${item.id})"class="btn btn-info">Edit</button>
+  </td>
+</tr>`;
+  return html;
+}
+
+//Refresh row
+function resetRow(id) {
+  var user;
+  $.ajax({
+    url: `../api/user/${id}`,
+    type: "GET",
+    success: function (result) {
+      user = result;
+      $(`#${id}`).html(`<td>${user.firstName} ${user.lastName}</td>
+      <td>${user.email}</td>
+      <td>${user.group.name}</td>
+      <td>                  
+      <button type="button" onclick="removeUser(${user.id})" class="btn btn-danger">Delete</button>
+      <button type="button" onclick="editUser(${user.id})"class="btn btn-info">Edit</button></td>`);
+    },
+  });
+}
+
+//html to display an alert
+function showAlert(response) {
+  if (response.title == "Success") {
+    return `
+    <div class="alert alert-success  alert-dismissible fade show" role="alert">
+      <strong>${response.title}!</strong> ${response.message}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    `;
+  } else {
+    return `
+    <div class="alert alert-danger  alert-dismissible fade show" role="alert">
+      <strong>${response.title}!</strong> ${response.message}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    `;
+  }
+}
 
 //pagination of list of users
-function displayPaginatedContent() {
+function displayPaginatedContent(data) {
   $("#pagination").pagination({
     dataSource: data,
     pageSize: 10,
@@ -29,20 +162,19 @@ function displayPaginatedContent() {
   });
 }
 
-//html to display user
-function renderItem(item) {
-  html = `
-<tr id="${item.id}">
-  <td>${item.fullName}</td>
-  <td>${item.email}</td>
-  <td>${item.group.name}</td>
-  <td>
-  <button type="button" onclick="removeUser(${item.id})" class="btn btn-danger">Delete</button>
-  <button type="button" onclick="editUser(${item.id})"class="btn btn-info">Edit</button>
-  </td>
-</tr>`;
-  return html;
-}
+$("#em1").click(() => {
+  userList.sort((a, b) => {
+    if (a.email < b.email) {
+      return -1;
+    } else if (a.email > b.email) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
+  console.log("test");
+  displayPaginatedContent(userList);
+});
 
 //Search user by name
 function search() {
@@ -109,31 +241,20 @@ function newUser() {
     $("#addUserForm").submit(function (e) {
       e.preventDefault();
       $.ajax({
-        url: "/users/submit",
+        url: "../api/user",
         type: "post",
         data: $("#addUserForm").serialize(),
         error: function (data) {
           var message = data.responseJSON;
           //Display error
-          $("#alert")
-            .html(`<div class="alert alert-danger  alert-dismissible fade show" role="alert">
-          <strong>${message.title}!</strong> ${message.message}.
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-          </button>
-      </div>`);
+          $("#alert").html(showAlert(data.responseJSON));
         },
         success: function (data) {
           var user = data.data;
           //Display success
-          $("#alert")
-            .html(`<div class="alert alert-success  alert-dismissible fade show" role="alert">
-          <strong>Success!</strong> A new account has been created. Authentication details have been sent to ${user.email}.
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-          </button>
-      </div>`);
+          $("#alert").html(showAlert(data));
           newUser();
+          renderPage();
         },
       });
     });
@@ -146,34 +267,29 @@ function newUser() {
 function removeUser(id) {
   if (confirm("Are you sure you want to delete this account?")) {
     $.ajax({
-      url: `./remove/${id}`,
+      url: `../api/user/${id}`,
       type: "DELETE",
       success: function (result) {
-        console.log(result);
+        $("#alert").html(showAlert(result));
       },
     });
-    $(`#${id}`).hide();
+    renderPage();
   }
 }
 
 //edit an user
 function editUser(id) {
-  var user;
-  $.ajax({
-    url: `./get/${id}`,
-    type: "GET",
-    success: function (result) {
-      user = result;
-      if (user) {
-        $(`#${id}`).html(`
+  var user = userList.filter((user) => user.id == id).pop();
+
+  $(`#${id}`).html(`
             <form id="editUserForm-${id}"></form>
             <input type="hidden" id="id" name="id" value="${id}" form="editUserForm-${id}">
             <td><div class="control-group"><input type="text" class="form-control" placeholder="Full Name" name="fullName" id="fullName" form="editUserForm-${id}" value="${
-          user.firstName
-        } ${user.lastName}" required></input></div></td>
+    user.firstName
+  } ${user.lastName}" required></input></div></td>
             <td><div class="control-group"><input type="email" class="form-control" placeholder="Email" name="email" id="email" form="editUserForm-${id}" value="${
-          user.email
-        }" required> </div></td>
+    user.email
+  }" required> </div></td>
             <td><div class="control-group"><select class="form-control groupSelect" placeholder="Group" name="group" id="groupSelect" form="editUserForm-${id}" data-live-search="true" required>
             ${groupsList
               .map((item) =>
@@ -188,63 +304,26 @@ function editUser(id) {
             <button class="m-1 btn btn-outline-secondary" onclick="resetRow(${id})" >Cancel</a></div>
             </td>
     `);
-        $(".groupSelect").selectpicker({
-          style: "btn-default",
-          virtualScroll: true,
-        });
-      }
-
-      $(`#editUserForm-${id}`).submit(function (e) {
-        e.preventDefault();
-        $.ajax({
-          url: "/users/submit",
-          type: "post",
-          data: $(`#editUserForm-${id}`).serialize(),
-          error: function (data) {
-            var message = data.responseJSON;
-            //Display error
-            $("#alert")
-              .html(`<div class="alert alert-danger  alert-dismissible fade show" role="alert">
-            <strong>${message.title}!</strong> ${message.message}.
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>`);
-          },
-          success: function (data) {
-            console.log({ data });
-            var user = data.data;
-            //Display success
-            $("#alert")
-              .html(`<div class="alert alert-success  alert-dismissible fade show" role="alert">
-            <strong>Success!</strong> User updated!
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>`);
-            resetRow(id);
-          },
-        });
-      });
-    },
+  $(".groupSelect").selectpicker({
+    style: "btn-default",
+    virtualScroll: true,
   });
-}
 
-//Refresh row
-function resetRow(id) {
-  var user;
-  $.ajax({
-    url: `./get/${id}`,
-    type: "GET",
-    success: function (result) {
-      user = result;
-      $(`#${id}`).html(`<td>${user.firstName} ${user.lastName}</td>
-      <td>${user.email}</td>
-      <td>${user.group.name}</td>
-      <td>                  
-      <button type="button" onclick="removeUser(${user.id})" class="btn btn-danger">Delete</button>
-      <button type="button" onclick="editUser(${user.id})"class="btn btn-info">Edit</button></td>`);
-    },
+  $(`#editUserForm-${id}`).submit(function (e) {
+    e.preventDefault();
+    $.ajax({
+      url: "/api/user",
+      type: "post",
+      data: $(`#editUserForm-${id}`).serialize(),
+      error: function (data) {
+        //Display error
+        $("#alert").html(showAlert(data.responseJSON));
+      },
+      success: function (data) {
+        $("#alert").html(showAlert(data));
+        resetRow(id);
+      },
+    });
   });
 }
 
@@ -341,7 +420,7 @@ An error occured while processing the file.
 $("#addUserList").click(function (e) {
   e.preventDefault();
   $.ajax({
-    url: "/users/submitList",
+    url: "/api/user/submitList",
     type: "post",
     data: { csvResult, role, group: parseInt($("#csvGroupSelect").val()) },
     error: function (data) {
@@ -365,17 +444,6 @@ $("#addUserList").click(function (e) {
   });
 });
 
-displayPaginatedContent();
 $(function () {
-  $("select").selectpicker({ style: "btn-outline-secondary" });
+  renderPage();
 });
-$("#selectGroup").append(
-  `${groupsList
-    .map((item) => `<option value="${item.id}">${item.name}</option>`)
-    .join("")}`
-);
-$("#csvGroupSelect").append(
-  `${groupsList
-    .map((item) => `<option value="${item.id}">${item.name}</option>`)
-    .join("")}`
-);

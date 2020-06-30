@@ -11,9 +11,65 @@ router.get(
   userController.currentUser
 );
 
+//get all students
+router.get(
+  "/students",
+  userController.allowIfLoggedin,
+  userController.grantAccess("readAny", "profile"),
+  apiController.getStudents
+);
+
+//get all teachers
+router.get(
+  "/teachers",
+  userController.allowIfLoggedin,
+  userController.grantAccess("readAny", "profile"),
+  apiController.getTeachers
+);
+
+//get all administrators
+router.get(
+  "/administrators",
+  userController.allowIfLoggedin,
+  userController.grantAccess("readAny", "profile"),
+  apiController.getAdmins
+);
+
+//Get User
+router.get(
+  "/user/:userId",
+  userController.allowIfLoggedin,
+  userController.grantAccess("readAny", "profile"),
+  apiController.getUser
+);
+
+//Add or update user
+router.post(
+  "/user",
+  userController.allowIfLoggedin,
+  userController.grantAccess("createAny", "profile"),
+  apiController.addUser
+);
+
+//Add user list
+router.post(
+  "/user/submitList",
+  userController.allowIfLoggedin,
+  userController.grantAccess("createAny", "profile"),
+  apiController.addUserList
+);
+
+//Remove User
+router.delete(
+  "/user/:userId",
+  userController.allowIfLoggedin,
+  userController.grantAccess("deleteAny", "profile"),
+  apiController.removeUser
+);
+
 //get all courses
 router.get(
-  "/api/courses",
+  "/courses",
   userController.allowIfLoggedin,
   userController.grantAccess("readAny", "course"),
   apiController.getCourses
@@ -21,7 +77,7 @@ router.get(
 
 //get a course
 router.get(
-  "/api/courses/:courseId",
+  "/courses/:courseId",
   userController.allowIfLoggedin,
   userController.grantAccess("readAny", "course"),
   apiController.getCourse
@@ -29,7 +85,7 @@ router.get(
 
 // add or update course
 router.post(
-  "/api/courses",
+  "/courses",
   userController.allowIfLoggedin,
   userController.grantAccess("createAny", "course"),
   apiController.addUpdateCourse
@@ -37,22 +93,23 @@ router.post(
 
 //remove course
 router.delete(
-  "/api/courses/:courseId",
+  "/courses/:courseId",
   userController.allowIfLoggedin,
   userController.grantAccess("deleteAny", "course"),
   apiController.removeCourse
 );
-//get all teachers
+
+// get all admin groups
 router.get(
-  "/api/teachers",
+  "/admingroups",
   userController.allowIfLoggedin,
-  userController.grantAccess("readAny", "profile"),
-  apiController.getTeachers
+  userController.grantAccess("readAny", "group"),
+  apiController.getAdminGroups
 );
 
 //get all groups
 router.get(
-  "/api/groups",
+  "/groups",
   userController.allowIfLoggedin,
   userController.grantAccess("readAny", "group"),
   apiController.getGroups
@@ -60,7 +117,7 @@ router.get(
 
 //add or update a group
 router.post(
-  "/api/groups",
+  "/groups",
   userController.allowIfLoggedin,
   userController.grantAccess("createAny", "group"),
   apiController.addUpdateGroup
@@ -68,14 +125,14 @@ router.post(
 
 //Get a group
 router.get(
-  "/api/groups/:groupId",
+  "/groups/:groupId",
   userController.allowIfLoggedin,
   userController.grantAccess("readAny", "group"),
   apiController.getGroup
 );
 //Remove group
 router.delete(
-  "/api/groups/:groupId",
+  "/groups/:groupId",
   userController.allowIfLoggedin,
   userController.grantAccess("deleteAny", "group"),
   apiController.removeGroup
@@ -83,7 +140,7 @@ router.delete(
 
 //get all departments
 router.get(
-  "/api/departments",
+  "/departments",
   userController.allowIfLoggedin,
   userController.grantAccess("readAny", "group"),
   apiController.getTeacherDepartments
@@ -91,7 +148,7 @@ router.get(
 
 //get a department
 router.get(
-  "/api/departments/:departmentId",
+  "/departments/:departmentId",
   userController.allowIfLoggedin,
   userController.grantAccess("readAny", "group"),
   apiController.getTeacherDepartment
@@ -99,7 +156,7 @@ router.get(
 
 //add or update teacher department
 router.post(
-  "/api/departments",
+  "/departments",
   userController.allowIfLoggedin,
   userController.grantAccess("createAny", "group"),
   apiController.addUpdateDepartment
@@ -107,7 +164,7 @@ router.post(
 
 //remove department
 router.delete(
-  "/api/departments/:departmentId",
+  "/departments/:departmentId",
   userController.allowIfLoggedin,
   userController.grantAccess("deleteAny", "group"),
   apiController.removeDepartment

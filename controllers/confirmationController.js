@@ -1,7 +1,6 @@
 const Hash = require("../models/hashModel");
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 
 // function to check if password matches
 async function validatePassword(plainPassword, hashedPassword) {
